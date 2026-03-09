@@ -8,7 +8,8 @@ import { Role } from './schemas/role.schema';
 @Injectable()
 export class RolesService {
   constructor(
-    @InjectModel(Role.name) private roleModel: Model<Role>,
+    @InjectModel(Role.name) 
+    private roleModel: Model<Role>,
   ) {}
 
   async create(createRoleDto: CreateRoleDto) {

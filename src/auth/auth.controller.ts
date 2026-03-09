@@ -80,6 +80,17 @@ export class AuthController {
     };
   }
 
+  @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
+  async logout(@Req() req) {
+    // Trong NestJS với JWT, logout chủ yếu xử lý ở client (xóa token)
+    // Server chỉ trả về response thành công
+    return {
+      success: true,
+      message: 'Đăng xuất thành công',
+    };
+  }
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleAuth() {

@@ -11,6 +11,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { BrandsModule } from './brands/brands.module';
 import { OrdersModule } from './orders/orders.module';
 import { CartsModule } from './carts/carts.module';
+import { AttributesModule } from './attributes/attributes.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { CartsModule } from './carts/carts.module';
     MongooseModule.forRoot(process.env.MONGODB_URI || ''), 
     RolesModule, 
     UsersModule, 
-    AuthModule, ProductsModule, CategoriesModule, BrandsModule, OrdersModule, CartsModule
+    AuthModule, ProductsModule, CategoriesModule, BrandsModule, OrdersModule, CartsModule, AttributesModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -15,6 +15,12 @@ const mongoose_1 = require("@nestjs/mongoose");
 const roles_module_1 = require("./roles/roles.module");
 const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
+const products_module_1 = require("./products/products.module");
+const categories_module_1 = require("./categories/categories.module");
+const brands_module_1 = require("./brands/brands.module");
+const orders_module_1 = require("./orders/orders.module");
+const carts_module_1 = require("./carts/carts.module");
+const attributes_module_1 = require("./attributes/attributes.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -25,7 +31,7 @@ exports.AppModule = AppModule = __decorate([
             mongoose_1.MongooseModule.forRoot(process.env.MONGODB_URI || ''),
             roles_module_1.RolesModule,
             users_module_1.UsersModule,
-            auth_module_1.AuthModule
+            auth_module_1.AuthModule, products_module_1.ProductsModule, categories_module_1.CategoriesModule, brands_module_1.BrandsModule, orders_module_1.OrdersModule, carts_module_1.CartsModule, attributes_module_1.AttributesModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
