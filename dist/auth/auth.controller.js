@@ -74,6 +74,12 @@ let AuthController = class AuthController {
             token: result.token,
         };
     }
+    async logout(req) {
+        return {
+            success: true,
+            message: 'Đăng xuất thành công',
+        };
+    }
     async googleAuth() {
     }
     async googleAuthCallback(req) {
@@ -169,6 +175,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('logout'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
 __decorate([
     (0, common_1.Get)('google'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),

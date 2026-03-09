@@ -23,6 +23,10 @@ export declare class AuthController {
         message: string;
         token: string;
     }>;
+    logout(req: any): Promise<{
+        success: boolean;
+        message: string;
+    }>;
     googleAuth(): Promise<void>;
     googleAuthCallback(req: any): Promise<{
         success: boolean;
