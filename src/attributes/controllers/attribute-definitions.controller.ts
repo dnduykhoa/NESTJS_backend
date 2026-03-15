@@ -26,7 +26,7 @@ export class AttributeDefinitionsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy danh sách định nghĩa thuộc tính thành công', definitions));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -38,7 +38,7 @@ export class AttributeDefinitionsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy định nghĩa thuộc tính đang hoạt động thành công', definitions));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -50,7 +50,7 @@ export class AttributeDefinitionsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy thuộc tính có thể lọc thành công', definitions));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -62,7 +62,7 @@ export class AttributeDefinitionsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy thuộc tính theo nhóm thành công', definitions));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -79,7 +79,7 @@ export class AttributeDefinitionsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy thông tin định nghĩa thuộc tính thành công', definition));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -91,7 +91,7 @@ export class AttributeDefinitionsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy thông tin định nghĩa thuộc tính thành công', definition));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -103,7 +103,7 @@ export class AttributeDefinitionsController {
       return res
         .status(HttpStatus.CREATED)
         .json(new ApiResponse('Tạo định nghĩa thuộc tính thành công', definition));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -119,7 +119,7 @@ export class AttributeDefinitionsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Cập nhật định nghĩa thuộc tính thành công', definition));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -131,7 +131,7 @@ export class AttributeDefinitionsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Xóa định nghĩa thuộc tính thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

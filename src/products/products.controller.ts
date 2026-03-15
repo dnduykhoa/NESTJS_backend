@@ -44,7 +44,7 @@ export class ProductsController {
             products,
           ),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -58,7 +58,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy sản phẩm hết hàng thành công', products));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -77,7 +77,7 @@ export class ProductsController {
             products,
           ),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -91,7 +91,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Tìm kiếm sản phẩm thành công', products));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -119,7 +119,7 @@ export class ProductsController {
             products,
           ),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -144,7 +144,7 @@ export class ProductsController {
             products,
           ),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -166,7 +166,7 @@ export class ProductsController {
             products,
           ),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -188,7 +188,7 @@ export class ProductsController {
             products,
           ),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -213,7 +213,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Lọc sản phẩm theo thông số kỹ thuật thành công', products),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -231,7 +231,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Lấy danh sách sản phẩm thành công', products),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -250,7 +250,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.CREATED)
         .json(new ApiResponse('Tạo sản phẩm thành công', product));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -278,7 +278,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Cập nhật sản phẩm thành công', product));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -294,7 +294,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Chuyển đổi trạng thái sản phẩm thành công', product),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -308,7 +308,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Đánh dấu sản phẩm hết hàng thành công', product));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -322,7 +322,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Khôi phục sản phẩm thành công', product));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -336,7 +336,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Ẩn sản phẩm thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -354,7 +354,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Lấy thông tin sản phẩm thành công', product),
         );
-    } catch (e) {
+    } catch (e: any) {
       const status =
         e.status && e.status >= 400 && e.status < 600
           ? e.status
@@ -375,7 +375,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy media sản phẩm thành công', media));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -396,7 +396,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Xóa media sản phẩm thành công', product));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -417,7 +417,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Đặt ảnh chính thành công', product));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -441,7 +441,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Lấy tùy chọn biến thể thành công', options),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -459,7 +459,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.CREATED)
         .json(new ApiResponse('Tạo biến thể thành công', product));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -482,7 +482,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Cập nhật biến thể thành công', product));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -503,7 +503,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Xóa biến thể thành công', product));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -524,7 +524,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Tìm biến thể phù hợp thành công', variant));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -550,7 +550,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Lấy danh sách biến thể thành công', variants),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -572,7 +572,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy media biến thể thành công', media));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -598,7 +598,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Upload media cho biến thể thành công', product),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -621,7 +621,7 @@ export class ProductsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Xóa media biến thể thành công', product));
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -646,7 +646,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Đặt ảnh chính cho biến thể thành công', product),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -669,7 +669,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Lấy thông tin biến thể thành công', variant),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -691,7 +691,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Lấy thông số kỹ thuật thành công', specs),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -718,7 +718,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Thêm thông số kỹ thuật thành công', product),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -750,7 +750,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Cập nhật thông số kỹ thuật thành công', product),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -770,7 +770,7 @@ export class ProductsController {
         .json(
           new ApiResponse('Xóa thông số kỹ thuật thành công', product),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));
@@ -792,7 +792,7 @@ export class ProductsController {
             product,
           ),
         );
-    } catch (e) {
+    } catch (e: any) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json(new ApiResponse(e.message, null));

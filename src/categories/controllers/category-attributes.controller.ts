@@ -17,7 +17,7 @@ export class CategoryAttributesController {
     try {
       const attributes = await this.categoryAttributesService.getByCategory(categoryId);
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy thuộc tính danh mục thành công', attributes));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -44,7 +44,7 @@ export class CategoryAttributesController {
       };
       const assignment = await this.categoryAttributesService.assign(dto);
       return res.status(HttpStatus.CREATED).json(new ApiResponse('Gán thuộc tính cho danh mục thành công', assignment));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -68,7 +68,7 @@ export class CategoryAttributesController {
       };
       const assignment = await this.categoryAttributesService.updateAssignment(id, dto);
       return res.status(HttpStatus.OK).json(new ApiResponse('Cập nhật liên kết thuộc tính-danh mục thành công', assignment));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -82,7 +82,7 @@ export class CategoryAttributesController {
     try {
       await this.categoryAttributesService.removeByCategoryAndDef(categoryId, attrDefId);
       return res.status(HttpStatus.OK).json(new ApiResponse('Xóa liên kết thuộc tính-danh mục thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -92,7 +92,7 @@ export class CategoryAttributesController {
     try {
       await this.categoryAttributesService.removeById(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Xóa liên kết thuộc tính-danh mục thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

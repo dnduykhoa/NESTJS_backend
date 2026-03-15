@@ -17,7 +17,7 @@ export class RolesController {
     try {
       const roles = await this.rolesService.findAll();
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy danh sách vai trò thành công', roles));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -27,7 +27,7 @@ export class RolesController {
     try {
       const role = await this.rolesService.findById(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy thông tin vai trò thành công', role));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -37,7 +37,7 @@ export class RolesController {
     try {
       const role = await this.rolesService.create(dto);
       return res.status(HttpStatus.CREATED).json(new ApiResponse('Tạo vai trò thành công', role));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -47,7 +47,7 @@ export class RolesController {
     try {
       const role = await this.rolesService.update(id, dto);
       return res.status(HttpStatus.OK).json(new ApiResponse('Cập nhật vai trò thành công', role));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -57,7 +57,7 @@ export class RolesController {
     try {
       await this.rolesService.remove(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Xóa vai trò thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

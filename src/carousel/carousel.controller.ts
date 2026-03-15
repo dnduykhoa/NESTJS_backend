@@ -43,7 +43,7 @@ export class CarouselController {
       }
       const url = this.fileStorage.storeFile(file, 'carousel');
       return res.status(HttpStatus.OK).json(new ApiResponse('Upload file thành công', { url }));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -56,7 +56,7 @@ export class CarouselController {
       return res.status(HttpStatus.OK).json(
         new ApiResponse('Lấy danh sách slide đang hoạt động thành công', slides),
       );
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -68,7 +68,7 @@ export class CarouselController {
     try {
       const slides = await this.carouselService.getAllSlides();
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy tất cả slide thành công', slides));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -85,7 +85,7 @@ export class CarouselController {
     try {
       const slide = await this.carouselService.create(dto, media);
       return res.status(HttpStatus.CREATED).json(new ApiResponse('Tạo slide thành công', slide));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -103,7 +103,7 @@ export class CarouselController {
     try {
       const slide = await this.carouselService.update(id, dto, media);
       return res.status(HttpStatus.OK).json(new ApiResponse('Cập nhật slide thành công', slide));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -115,7 +115,7 @@ export class CarouselController {
     try {
       await this.carouselService.remove(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Xóa slide thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

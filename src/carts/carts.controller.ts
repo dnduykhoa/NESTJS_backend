@@ -26,7 +26,7 @@ export class CartsController {
       if (!userId) throw new Error('userId là bắt buộc');
       const cart = await this.cartsService.getCartByUserId(userId);
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy giỏ hàng thành công', cart));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -40,7 +40,7 @@ export class CartsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Kiểm tra giỏ hàng thành công', result));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -58,7 +58,7 @@ export class CartsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Thêm sản phẩm vào giỏ hàng thành công', cart));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -77,7 +77,7 @@ export class CartsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Cập nhật giỏ hàng thành công', cart));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -95,7 +95,7 @@ export class CartsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Xóa sản phẩm khỏi giỏ hàng thành công', cart));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -107,7 +107,7 @@ export class CartsController {
       if (!userId) throw new Error('userId là bắt buộc');
       const cart = await this.cartsService.clearCart(userId);
       return res.status(HttpStatus.OK).json(new ApiResponse('Xóa toàn bộ giỏ hàng thành công', cart));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

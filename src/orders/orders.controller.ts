@@ -34,7 +34,7 @@ export class OrdersController {
       return res
         .status(HttpStatus.CREATED)
         .json(new ApiResponse('Tạo đơn hàng thành công', order));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -47,7 +47,7 @@ export class OrdersController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy danh sách đơn hàng thành công', orders));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -60,7 +60,7 @@ export class OrdersController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy tất cả đơn hàng thành công', orders));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -77,7 +77,7 @@ export class OrdersController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy thông tin đơn hàng thành công', order));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -99,7 +99,7 @@ export class OrdersController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Hủy đơn hàng thành công', order));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -116,7 +116,7 @@ export class OrdersController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Tạo lại link thanh toán thành công', result));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -133,7 +133,7 @@ export class OrdersController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Cập nhật trạng thái đơn hàng thành công', order));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

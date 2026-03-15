@@ -17,7 +17,7 @@ export class CategoriesController {
     try {
       const categories = await this.categoriesService.findAll();
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy danh sách danh mục thành công', categories));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -27,7 +27,7 @@ export class CategoriesController {
     try {
       const categories = await this.categoriesService.findRoot();
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy danh sách danh mục gốc thành công', categories));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -37,7 +37,7 @@ export class CategoriesController {
     try {
       const categories = await this.categoriesService.findActive();
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy danh sách danh mục đang hoạt động thành công', categories));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -47,7 +47,7 @@ export class CategoriesController {
     try {
       const categories = await this.categoriesService.search(name || '');
       return res.status(HttpStatus.OK).json(new ApiResponse('Tìm kiếm danh mục thành công', categories));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -57,7 +57,7 @@ export class CategoriesController {
     try {
       const category = await this.categoriesService.findById(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy thông tin danh mục thành công', category));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -67,7 +67,7 @@ export class CategoriesController {
     try {
       const categories = await this.categoriesService.findChildren(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy danh sách danh mục con thành công', categories));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -77,7 +77,7 @@ export class CategoriesController {
     try {
       const category = await this.categoriesService.create(dto);
       return res.status(HttpStatus.CREATED).json(new ApiResponse('Tạo danh mục thành công', category));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -91,7 +91,7 @@ export class CategoriesController {
     try {
       const category = await this.categoriesService.update(id, dto);
       return res.status(HttpStatus.OK).json(new ApiResponse('Cập nhật danh mục thành công', category));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -101,7 +101,7 @@ export class CategoriesController {
     try {
       await this.categoriesService.remove(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Xóa danh mục thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

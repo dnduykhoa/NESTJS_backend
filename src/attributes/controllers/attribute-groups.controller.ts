@@ -26,7 +26,7 @@ export class AttributeGroupsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy danh sách nhóm thuộc tính thành công', groups));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -38,7 +38,7 @@ export class AttributeGroupsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy nhóm thuộc tính đang hoạt động thành công', groups));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -50,7 +50,7 @@ export class AttributeGroupsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Lấy thông tin nhóm thuộc tính thành công', group));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -62,7 +62,7 @@ export class AttributeGroupsController {
       return res
         .status(HttpStatus.CREATED)
         .json(new ApiResponse('Tạo nhóm thuộc tính thành công', group));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -78,7 +78,7 @@ export class AttributeGroupsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Cập nhật nhóm thuộc tính thành công', group));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -90,7 +90,7 @@ export class AttributeGroupsController {
       return res
         .status(HttpStatus.OK)
         .json(new ApiResponse('Xóa nhóm thuộc tính thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

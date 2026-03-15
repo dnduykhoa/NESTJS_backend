@@ -60,7 +60,7 @@ export class AuthController {
           fullName: result.user.fullName,
         }),
       );
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -72,7 +72,7 @@ export class AuthController {
     try {
       const result = await this.authService.login(dto);
       return res.status(HttpStatus.OK).json(new ApiResponse(result.message || 'Đăng nhập thành công', result));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.UNAUTHORIZED).json(new ApiResponse(e.message, null));
     }
   }
@@ -94,7 +94,7 @@ export class AuthController {
           avatarUrl: user.avatarUrl,
         }),
       );
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.UNAUTHORIZED).json(new ApiResponse(e.message, null));
     }
   }
@@ -133,7 +133,7 @@ export class AuthController {
     try {
       await this.authService.changePassword(id, dto);
       return res.status(HttpStatus.OK).json(new ApiResponse('Đổi mật khẩu thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -145,7 +145,7 @@ export class AuthController {
     try {
       await this.authService.forgotPassword(dto);
       return res.status(HttpStatus.OK).json(new ApiResponse('Mã xác thực đã gửi đến email của bạn', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -157,7 +157,7 @@ export class AuthController {
     try {
       await this.authService.resetPassword(dto);
       return res.status(HttpStatus.OK).json(new ApiResponse('Đặt lại mật khẩu thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -179,7 +179,7 @@ export class AuthController {
           null,
         ),
       );
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -191,7 +191,7 @@ export class AuthController {
     try {
       const result = await this.authService.verify2FA(dto.emailOrPhone, dto.code);
       return res.status(HttpStatus.OK).json(new ApiResponse('Xác thực 2 bước thành công', result));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

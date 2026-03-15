@@ -20,7 +20,7 @@ export class BrandsController {
     try {
       const brands = await this.brandsService.findAll();
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy danh sách thương hiệu thành công', brands));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -30,7 +30,7 @@ export class BrandsController {
     try {
       const brands = await this.brandsService.findActive();
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy thương hiệu đang hoạt động thành công', brands));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -40,7 +40,7 @@ export class BrandsController {
     try {
       const brands = await this.brandsService.search(name || '');
       return res.status(HttpStatus.OK).json(new ApiResponse('Tìm kiếm thương hiệu thành công', brands));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -50,7 +50,7 @@ export class BrandsController {
     try {
       const brand = await this.brandsService.findById(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy thông tin thương hiệu thành công', brand));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -65,7 +65,7 @@ export class BrandsController {
     try {
       const brand = await this.brandsService.create(dto, logo);
       return res.status(HttpStatus.CREATED).json(new ApiResponse('Tạo thương hiệu thành công', brand));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -81,7 +81,7 @@ export class BrandsController {
     try {
       const brand = await this.brandsService.update(id, dto, logo);
       return res.status(HttpStatus.OK).json(new ApiResponse('Cập nhật thương hiệu thành công', brand));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -91,7 +91,7 @@ export class BrandsController {
     try {
       await this.brandsService.remove(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Xóa thương hiệu thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

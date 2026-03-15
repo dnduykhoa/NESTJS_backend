@@ -21,7 +21,7 @@ export class UsersController {
     try {
       const user = await this.usersService.findById(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy thông tin người dùng thành công', user));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -37,7 +37,7 @@ export class UsersController {
     try {
       const user = await this.usersService.updateProfile(id, dto);
       return res.status(HttpStatus.OK).json(new ApiResponse('Cập nhật thông tin thành công', user));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -49,7 +49,7 @@ export class UsersController {
     try {
       const users = await this.usersService.getAllUsers();
       return res.status(HttpStatus.OK).json(new ApiResponse('Lấy danh sách người dùng thành công', users));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -61,7 +61,7 @@ export class UsersController {
     try {
       const users = await this.usersService.searchUsers(keyword || '');
       return res.status(HttpStatus.OK).json(new ApiResponse('Tìm kiếm người dùng thành công', users));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -73,7 +73,7 @@ export class UsersController {
     try {
       await this.usersService.deleteUser(id);
       return res.status(HttpStatus.OK).json(new ApiResponse('Xóa người dùng thành công', null));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }
@@ -89,7 +89,7 @@ export class UsersController {
     try {
       const user = await this.usersService.updateUserRoles(id, dto.roles);
       return res.status(HttpStatus.OK).json(new ApiResponse('Cập nhật vai trò thành công', user));
-    } catch (e) {
+    } catch (e: any) {
       return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
   }

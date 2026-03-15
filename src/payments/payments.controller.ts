@@ -47,7 +47,7 @@ export class PaymentsController {
           `${frontendUrl}/payment/failure?orderCode=${encodeURIComponent(result.orderCode)}&message=${encodeURIComponent(result.message)}`,
         );
       }
-    } catch (e) {
+    } catch (e: any) {
       return res.redirect(
         `${frontendUrl}/payment/failure?message=${encodeURIComponent(e.message)}`,
       );
@@ -77,7 +77,7 @@ export class PaymentsController {
           `${frontendUrl}/payment/failure?orderCode=${encodeURIComponent(result.orderCode)}&message=${encodeURIComponent(result.message)}`,
         );
       }
-    } catch (e) {
+    } catch (e: any) {
       return res.redirect(
         `${frontendUrl}/payment/failure?message=${encodeURIComponent(e.message)}`,
       );
@@ -101,7 +101,7 @@ export class PaymentsController {
       }
 
       return res.status(HttpStatus.NO_CONTENT).send();
-    } catch (e) {
+    } catch (e: any) {
       console.error('MoMo IPN processing error:', e);
       return res.status(HttpStatus.NO_CONTENT).send();
     }
