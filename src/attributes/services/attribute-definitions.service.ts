@@ -1,77 +1,133 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { AttributeDefinition } from '../schemas/attribute-definition.schema';
-import { CreateAttributeDefinitionDto } from '../dto/definition/create-attribute-definition.dto';
-import { UpdateAttributeDefinitionDto } from '../dto/definition/update-attribute-definition.dto';
+import { Model, Types } from 'mongoose';
+import { AttributeDefinition, AttributeDefinitionDocument } from '../schemas/attribute-definition.schema';
+import { AttributeGroup, AttributeGroupDocument } from '../schemas/attribute-group.schema';
+import { CreateAttributeDefinitionDto } from '../dto/create-attribute-definition.dto';
+import { UpdateAttributeDefinitionDto } from '../dto/update-attribute-definition.dto';
 
 @Injectable()
 export class AttributeDefinitionsService {
   constructor(
-    @InjectModel(AttributeDefinition.name) private attributeDefinitionModel: Model<AttributeDefinition>,
-    @InjectModel('CategoryAttribute') private categoryAttributeModel: Model<any>,
+    @InjectModel(AttributeDefinition.name)
+    private readonly attributeDefinitionModel: Model<AttributeDefinitionDocument>,
+    @InjectModel(AttributeGroup.name)
+    private readonly attributeGroupModel: Model<AttributeGroupDocument>,
   ) {}
 
-  async create(dto: CreateAttributeDefinitionDto) {
-    const def = new this.attributeDefinitionModel(dto);
-    return def.save();
+  async getAllDefinitions(): Promise<AttributeDefinitionDocument[]> {
+    return this.attributeDefinitionModel
+      .find()
+      .populate('attributeGroup')
+      .sort({ displayOrder: 1, name: 1 })
+      .exec();
   }
 
-  async findAll() {
-    return this.attributeDefinitionModel.find().populate('attributeGroup').exec();
+  async getActiveDefinitions(): Promise<AttributeDefinitionDocument[]> {
+    return this.attributeDefinitionModel
+      .find({ isActive: true })
+      .populate('attributeGroup')
+      .sort({ displayOrder: 1, name: 1 })
+      .exec();
   }
 
-  async findActive() {
-    return this.attributeDefinitionModel.find({ isActive: true }).populate('attributeGroup').exec();
+  async getFilterableDefinitions(): Promise<AttributeDefinitionDocument[]> {
+    return this.attributeDefinitionModel
+      .find({ isFilterable: true })
+      .populate('attributeGroup')
+      .sort({ displayOrder: 1, name: 1 })
+      .exec();
   }
 
-  async findFilterable() {
-    return this.attributeDefinitionModel.find({ isFilterable: true }).populate('attributeGroup').exec();
+  async getDefinitionsByGroup(groupId: string): Promise<AttributeDefinitionDocument[]> {
+    return this.attributeDefinitionModel
+      .find({ attributeGroup: new Types.ObjectId(groupId) })
+      .populate('attributeGroup')
+      .sort({ displayOrder: 1, name: 1 })
+      .exec();
   }
 
-  async findByGroup(groupId: string) {
-    return this.attributeDefinitionModel.find({ attributeGroup: groupId }).exec();
-  }
-
-  async findOne(id: string) {
-    const def = await this.attributeDefinitionModel.findById(id).populate('attributeGroup').exec();
-    if (!def) {
-      throw new NotFoundException(`Attribute definition with ID ${id} not found`);
-    }
-    return def;
-  }
-
-  async findByKey(attrKey: string) {
-    const def = await this.attributeDefinitionModel.findOne({ attrKey }).populate('attributeGroup').exec();
-    if (!def) {
-      throw new NotFoundException(`Attribute definition with key ${attrKey} not found`);
-    }
-    return def;
-  }
-
-  async update(id: string, dto: UpdateAttributeDefinitionDto) {
-    const def = await this.attributeDefinitionModel
-      .findByIdAndUpdate(id, dto, { new: true })
+  async getDefinitionById(id: string): Promise<AttributeDefinitionDocument> {
+    const definition = await this.attributeDefinitionModel
+      .findById(id)
       .populate('attributeGroup')
       .exec();
-    if (!def) {
-      throw new NotFoundException(`Attribute definition with ID ${id} not found`);
+    if (!definition) {
+      throw new NotFoundException(`Không tìm thấy định nghĩa thuộc tính với ID: ${id}`);
     }
-    return def;
+    return definition;
   }
 
-  async remove(id: string) {
-    const caCount = await this.categoryAttributeModel.countDocuments({ attributeDefinition: id }).exec();
-    if (caCount > 0) {
-      throw new BadRequestException(
-        `Cannot delete this attribute definition because it is used in ${caCount} category attributes. Please remove them first.`
-      );
+  async getDefinitionByKey(attrKey: string): Promise<AttributeDefinitionDocument | null> {
+    return this.attributeDefinitionModel
+      .findOne({ attrKey })
+      .populate('attributeGroup')
+      .exec();
+  }
+
+  async createDefinition(dto: CreateAttributeDefinitionDto): Promise<AttributeDefinitionDocument> {
+    const existing = await this.attributeDefinitionModel.findOne({ attrKey: dto.attrKey }).exec();
+    if (existing) {
+      throw new BadRequestException(`Đã tồn tại định nghĩa thuộc tính với khóa: ${dto.attrKey}`);
     }
 
-    const def = await this.attributeDefinitionModel.findByIdAndDelete(id).exec();
-    if (!def) {
-      throw new NotFoundException(`Attribute definition with ID ${id} not found`);
+    let attributeGroup: Types.ObjectId | null = null;
+    if (dto.groupId) {
+      const group = await this.attributeGroupModel.findById(dto.groupId).exec();
+      if (!group) {
+        throw new NotFoundException(`Không tìm thấy nhóm thuộc tính với ID: ${dto.groupId}`);
+      }
+      attributeGroup = new Types.ObjectId(dto.groupId);
     }
-    return { message: 'Attribute definition deleted successfully', definition: def };
+
+    const { groupId, ...rest } = dto;
+    const definition = new this.attributeDefinitionModel({
+      ...rest,
+      attributeGroup,
+      displayOrder: dto.displayOrder ?? 0,
+      isActive: dto.isActive ?? true,
+      isFilterable: dto.isFilterable ?? false,
+      isRequired: dto.isRequired ?? false,
+    });
+
+    return definition.save();
+  }
+
+  async updateDefinition(
+    id: string,
+    dto: UpdateAttributeDefinitionDto,
+  ): Promise<AttributeDefinitionDocument> {
+    const definition = await this.getDefinitionById(id);
+
+    if (dto.attrKey && dto.attrKey !== definition.attrKey) {
+      const existing = await this.attributeDefinitionModel
+        .findOne({ attrKey: dto.attrKey })
+        .exec();
+      if (existing) {
+        throw new BadRequestException(`Đã tồn tại định nghĩa thuộc tính với khóa: ${dto.attrKey}`);
+      }
+    }
+
+    const { groupId, ...rest } = dto;
+
+    if (groupId !== undefined) {
+      if (groupId === null) {
+        (definition as any).attributeGroup = null;
+      } else {
+        const group = await this.attributeGroupModel.findById(groupId).exec();
+        if (!group) {
+          throw new NotFoundException(`Không tìm thấy nhóm thuộc tính với ID: ${groupId}`);
+        }
+        (definition as any).attributeGroup = new Types.ObjectId(groupId);
+      }
+    }
+
+    Object.assign(definition, rest);
+    return definition.save();
+  }
+
+  async deleteDefinition(id: string): Promise<void> {
+    const definition = await this.getDefinitionById(id);
+    await this.attributeDefinitionModel.findByIdAndDelete(definition._id).exec();
   }
 }

@@ -1,25 +1,40 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
-import { AuthService } from './auth.service';
+import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
-import { User, UserSchema } from '../users/schemas/user.schema';
-import { GoogleStrategy } from './strategies/google.strategy';
+import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { User, UserSchema } from '../users/schemas/user.schema';
+import { Role, RoleSchema } from '../roles/schemas/role.schema';
+import { TwoFactorCode, TwoFactorCodeSchema } from './schemas/two-factor-code.schema';
 import { MailHandler } from '../utils/mail.handler';
+import { PasswordValidator } from '../utils/password.validator';
+import { PhoneValidator } from '../utils/phone.validator';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Role.name, schema: RoleSchema },
+      { name: TwoFactorCode.name, schema: TwoFactorCodeSchema },
+    ]),
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'odSzSDjC2Cxq79jEExf4GWR5m1kphNpJo2StKBiG70c=',
+      secret: process.env.JWT_SECRET || 'default_secret',
       signOptions: { expiresIn: '24h' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, GoogleStrategy, JwtStrategy, MailHandler],
-  exports: [JwtModule],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    GoogleStrategy,
+    MailHandler,
+    PasswordValidator,
+    PhoneValidator,
+  ],
+  exports: [JwtModule, AuthService],
 })
 export class AuthModule {}

@@ -1,61 +1,74 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CategoryAttribute } from '../schemas/category-attribute.schema';
-import { CreateCategoryAttributeDto } from '../dto/category-attributes/create-category-attribute.dto';
-import { UpdateCategoryAttributeDto } from '../dto/category-attributes/update-category-attribute.dto';
+import { CategoryAttribute, CategoryAttributeDocument } from '../schemas/category-attribute.schema';
+import { CreateCategoryAttributeDto } from '../dto/create-category-attribute.dto';
+import { UpdateCategoryAttributeDto } from '../dto/update-category-attribute.dto';
 
 @Injectable()
 export class CategoryAttributesService {
   constructor(
-    @InjectModel(CategoryAttribute.name) private categoryAttributeModel: Model<CategoryAttribute>,
+    @InjectModel(CategoryAttribute.name)
+    private readonly categoryAttributeModel: Model<CategoryAttributeDocument>,
   ) {}
 
-  async findByCategory(categoryId: string) {
+  async getByCategory(categoryId: string): Promise<CategoryAttributeDocument[]> {
     return this.categoryAttributeModel
       .find({ category: categoryId })
       .populate('attributeDefinition')
+      .sort({ displayOrder: 1 })
       .exec();
   }
 
-  async assign(dto: CreateCategoryAttributeDto) {
-    const existing = await this.categoryAttributeModel
-      .findOne({ category: dto.category, attributeDefinition: dto.attributeDefinition })
-      .exec();
+  async assign(dto: CreateCategoryAttributeDto): Promise<CategoryAttributeDocument> {
+    const existing = await this.categoryAttributeModel.findOne({
+      category: dto.categoryId,
+      attributeDefinition: dto.attrDefId,
+    });
     if (existing) {
-      throw new BadRequestException('This attribute is already assigned to this category');
+      throw new BadRequestException(
+        `Thuộc tính này đã được gán cho danh mục. Không thể gán trùng lặp`,
+      );
     }
 
-    const ca = new this.categoryAttributeModel(dto);
-    return ca.save();
+    return new this.categoryAttributeModel({
+      category: dto.categoryId,
+      attributeDefinition: dto.attrDefId,
+      isRequired: dto.isRequired ?? false,
+      displayOrder: dto.displayOrder ?? 0,
+    }).save();
   }
 
-  async update(id: string, dto: UpdateCategoryAttributeDto) {
-    const ca = await this.categoryAttributeModel
-      .findByIdAndUpdate(id, dto, { new: true })
-      .populate('attributeDefinition')
-      .exec();
-    if (!ca) {
-      throw new NotFoundException(`Category attribute with ID ${id} not found`);
+  async updateAssignment(id: string, dto: UpdateCategoryAttributeDto): Promise<CategoryAttributeDocument> {
+    const assignment = await this.categoryAttributeModel.findById(id);
+    if (!assignment) {
+      throw new NotFoundException(`Không tìm thấy liên kết thuộc tính-danh mục với ID: ${id}`);
     }
-    return ca;
+
+    if (dto.isRequired !== undefined) assignment.isRequired = dto.isRequired;
+    if (dto.displayOrder !== undefined) assignment.displayOrder = dto.displayOrder;
+
+    return assignment.save();
   }
 
-  async remove(id: string) {
-    const ca = await this.categoryAttributeModel.findByIdAndDelete(id).exec();
-    if (!ca) {
-      throw new NotFoundException(`Category attribute with ID ${id} not found`);
+  async removeById(id: string): Promise<void> {
+    const assignment = await this.categoryAttributeModel.findById(id);
+    if (!assignment) {
+      throw new NotFoundException(`Không tìm thấy liên kết thuộc tính-danh mục với ID: ${id}`);
     }
-    return { message: 'Attribute removed from category successfully' };
+    await this.categoryAttributeModel.findByIdAndDelete(id);
   }
 
-  async removeByKeys(categoryId: string, attrDefId: string) {
-    const ca = await this.categoryAttributeModel
-      .findOneAndDelete({ category: categoryId, attributeDefinition: attrDefId })
-      .exec();
-    if (!ca) {
-      throw new NotFoundException('Category attribute not found');
+  async removeByCategoryAndDef(categoryId: string, attrDefId: string): Promise<void> {
+    const assignment = await this.categoryAttributeModel.findOne({
+      category: categoryId,
+      attributeDefinition: attrDefId,
+    });
+    if (!assignment) {
+      throw new NotFoundException(
+        `Không tìm thấy liên kết giữa danh mục ${categoryId} và thuộc tính ${attrDefId}`,
+      );
     }
-    return { message: 'Attribute removed from category successfully' };
+    await this.categoryAttributeModel.findByIdAndDelete(assignment._id);
   }
 }
