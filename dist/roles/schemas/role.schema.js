@@ -11,19 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleSchema = exports.Role = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-let Role = class Role extends mongoose_2.Document {
-    name;
-    description;
-    isDeleted;
+let Role = class Role {
 };
 exports.Role = Role;
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, unique: true }),
+    (0, mongoose_1.Prop)({ required: true, unique: true, maxlength: 50 }),
     __metadata("design:type", String)
 ], Role.prototype, "name", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ default: "" }),
+    (0, mongoose_1.Prop)({ default: '' }),
     __metadata("design:type", String)
 ], Role.prototype, "description", void 0);
 __decorate([

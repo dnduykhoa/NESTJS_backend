@@ -11,25 +11,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BrandSchema = exports.Brand = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-let Brand = class Brand extends mongoose_2.Document {
-    name;
-    logoUrl;
-    description;
-    displayOrder;
-    isActive;
+let Brand = class Brand {
 };
 exports.Brand = Brand;
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, unique: true }),
+    (0, mongoose_1.Prop)({ required: true, unique: true, maxlength: 100 }),
     __metadata("design:type", String)
 ], Brand.prototype, "name", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ maxlength: 500 }),
+    (0, mongoose_1.Prop)({ default: null, maxlength: 500 }),
     __metadata("design:type", String)
 ], Brand.prototype, "logoUrl", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String }),
+    (0, mongoose_1.Prop)({ default: null, type: String }),
     __metadata("design:type", String)
 ], Brand.prototype, "description", void 0);
 __decorate([

@@ -20,18 +20,17 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const user_schema_1 = require("../../users/schemas/user.schema");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    userModel;
     constructor(userModel) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: process.env.JWT_SECRET || '',
+            secretOrKey: process.env.JWT_SECRET || 'default_secret',
         });
         this.userModel = userModel;
     }
     async validate(payload) {
-        const user = await this.userModel.findById(payload.id);
-        if (!user) {
+        const user = await this.userModel.findById(payload.id).populate('role');
+        if (!user || user.isDeleted) {
             throw new common_1.UnauthorizedException('Token không hợp lệ');
         }
         return user;

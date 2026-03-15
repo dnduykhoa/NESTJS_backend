@@ -1,7 +1,22 @@
-import { Controller, Post, Body, Get, UseGuards, Req, BadRequestException } from '@nestjs/common';
+import {
+  Controller, Post, Put, Get,
+  Body, Param, Res, HttpStatus, UseGuards,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { JwtService } from '@nestjs/jwt';
+import { ApiResponse } from '../common/dto/api-response.dto';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { Toggle2faDto } from './dto/toggle-2fa.dto';
+import { Verify2faDto } from './dto/verify-2fa.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -10,211 +25,174 @@ export class AuthController {
     private readonly jwtService: JwtService,
   ) {}
 
-  @Post('register')
-  async register(@Body() body: any) {
-    // Validation: Bắt buộc phải có password khi đăng ký thông thường
-    if (!body.password || body.password.trim() === '') {
-      throw new BadRequestException('Password là bắt buộc');
-    }
+  // ── Kiểm tra tồn tại ────────────────────────────────────────────────────
 
-    // Kiểm tra xác nhận mật khẩu
-    if (!body.confirmPassword) {
-      throw new BadRequestException('Vui lòng xác nhận lại mật khẩu');
-    }
-
-    if (body.password !== body.confirmPassword) {
-      throw new BadRequestException('Mật khẩu xác nhận không khớp');
-    }
-    
-    if (body.password.length < 8) {
-      throw new BadRequestException('Password phải có ít nhất 8 ký tự');
-    }
-
-    // Kiểm tra password phải có chữ hoa
-    if (!/[A-Z]/.test(body.password)) {
-      throw new BadRequestException('Password phải có ít nhất 1 chữ hoa');
-    }
-
-    // Kiểm tra password phải có chữ thường
-    if (!/[a-z]/.test(body.password)) {
-      throw new BadRequestException('Password phải có ít nhất 1 chữ thường');
-    }
-
-    // Kiểm tra password phải có số
-    if (!/[0-9]/.test(body.password)) {
-      throw new BadRequestException('Password phải có ít nhất 1 chữ số');
-    }
-
-    // Kiểm tra password phải có ký tự đặc biệt
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(body.password)) {
-      throw new BadRequestException('Password phải có ít nhất 1 ký tự đặc biệt (!@#$%^&*...)');
-    }
-
-    const newUser = await this.authService.register({
-      username: body.username,
-      password: body.password,
-      email: body.email,
-      role: process.env.DEFAULT_ROLE_ID || '',
-      avatarUrl: body.avatarUrl,
-      fullName: body.fullName,
-      birthday: body.birthday,
-    });
-    return newUser;
+  @Get('check-username/:username')
+  async checkUsername(@Param('username') username: string, @Res() res: Response) {
+    const exists = await this.authService.checkUsername(username);
+    return res.status(HttpStatus.OK).json(new ApiResponse('Kiểm tra tên đăng nhập', { exists }));
   }
+
+  @Get('check-email/:email')
+  async checkEmail(@Param('email') email: string, @Res() res: Response) {
+    const exists = await this.authService.checkEmail(email);
+    return res.status(HttpStatus.OK).json(new ApiResponse('Kiểm tra email', { exists }));
+  }
+
+  @Get('check-phone/:phone')
+  async checkPhone(@Param('phone') phone: string, @Res() res: Response) {
+    const exists = await this.authService.checkPhone(phone);
+    return res.status(HttpStatus.OK).json(new ApiResponse('Kiểm tra số điện thoại', { exists }));
+  }
+
+  // ── Đăng ký ──────────────────────────────────────────────────────────────
+
+  @Post('register')
+  async register(@Body() dto: RegisterDto, @Res() res: Response) {
+    try {
+      const result = await this.authService.register(dto);
+      return res.status(HttpStatus.CREATED).json(
+        new ApiResponse('Đăng ký thành công', {
+          token: result.token,
+          userId: (result.user as any)._id,
+          username: result.user.username,
+          email: result.user.email,
+          fullName: result.user.fullName,
+        }),
+      );
+    } catch (e) {
+      return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
+    }
+  }
+
+  // ── Đăng nhập ────────────────────────────────────────────────────────────
 
   @Post('login')
-  async login(@Body() body: { username: string; password: string }) {
-    const result = await this.authService.login(body.username, body.password);
-    
-    if (!result) {
-      return {
-        success: false,
-        message: 'Tên đăng nhập hoặc mật khẩu không đúng',
-      };
+  async login(@Body() dto: LoginDto, @Res() res: Response) {
+    try {
+      const result = await this.authService.login(dto);
+      return res.status(HttpStatus.OK).json(new ApiResponse(result.message || 'Đăng nhập thành công', result));
+    } catch (e) {
+      return res.status(HttpStatus.UNAUTHORIZED).json(new ApiResponse(e.message, null));
     }
-
-    return {
-      success: true,
-      message: 'Đăng nhập thành công',
-      token: result.token,
-    };
   }
 
-  @Post('logout')
-  @UseGuards(AuthGuard('jwt'))
-  async logout(@Req() req) {
-    // Trong NestJS với JWT, logout chủ yếu xử lý ở client (xóa token)
-    // Server chỉ trả về response thành công
-    return {
-      success: true,
-      message: 'Đăng xuất thành công',
-    };
+  // ── Google OAuth (idToken) ────────────────────────────────────────────────
+
+  @Post('google')
+  async googleLogin(@Body() dto: GoogleLoginDto, @Res() res: Response) {
+    try {
+      const result = await this.authService.loginWithGoogle(dto.idToken);
+      const user = result.user as any;
+      return res.status(HttpStatus.OK).json(
+        new ApiResponse('Đăng nhập Google thành công', {
+          token: result.token,
+          userId: user._id,
+          username: user.username,
+          email: user.email,
+          fullName: user.fullName,
+          avatarUrl: user.avatarUrl,
+        }),
+      );
+    } catch (e) {
+      return res.status(HttpStatus.UNAUTHORIZED).json(new ApiResponse(e.message, null));
+    }
   }
 
-  @Get('google')
+  // ── Google OAuth2 Passport redirect flow ────────────────────────────────
+
+  @Get('google/oauth')
   @UseGuards(AuthGuard('google'))
-  async googleAuth() {
-    // Guard sẽ redirect đến Google
-  }
+  async googleAuth() {}
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthCallback(@Req() req) {
-    const user = req.user;
+  async googleCallback(@CurrentUser() user: any, @Res() res: Response) {
     const token = this.jwtService.sign({ id: user._id });
-    
-    return {
-      success: true,
-      message: 'Đăng nhập Google thành công',
-      token,
-      user: {
-        email: user.email,
-        fullName: user.fullName,
-        avatarUrl: user.avatarUrl,
-      },
-    };
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    return res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
   }
 
-  @Post('change-password')
-  @UseGuards(AuthGuard('jwt'))
+  // ── Đăng xuất ────────────────────────────────────────────────────────────
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@Res() res: Response) {
+    return res.status(HttpStatus.OK).json(new ApiResponse('Đăng xuất thành công', null));
+  }
+
+  // ── Đổi mật khẩu ─────────────────────────────────────────────────────────
+
+  @Put('change-password/:id')
+  @UseGuards(JwtAuthGuard)
   async changePassword(
-    @Req() req,
-    @Body() body: { oldPassword: string; newPassword: string; confirmNewPassword: string },
+    @Param('id') id: string,
+    @Body() dto: ChangePasswordDto,
+    @Res() res: Response,
   ) {
-    // Validation
-    if (!body.oldPassword || !body.newPassword || !body.confirmNewPassword) {
-      throw new BadRequestException('Vui lòng nhập đầy đủ mật khẩu cũ, mật khẩu mới và xác nhận mật khẩu mới');
+    try {
+      await this.authService.changePassword(id, dto);
+      return res.status(HttpStatus.OK).json(new ApiResponse('Đổi mật khẩu thành công', null));
+    } catch (e) {
+      return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
-
-    // Kiểm tra xác nhận mật khẩu mới
-    if (body.newPassword !== body.confirmNewPassword) {
-      throw new BadRequestException('Mật khẩu mới và xác nhận mật khẩu không khớp');
-    }
-
-    if (body.newPassword.length < 8) {
-      throw new BadRequestException('Mật khẩu mới phải có ít nhất 8 ký tự');
-    }
-
-    // Kiểm tra mật khẩu mới phải có chữ hoa
-    if (!/[A-Z]/.test(body.newPassword)) {
-      throw new BadRequestException('Mật khẩu mới phải có ít nhất 1 chữ hoa');
-    }
-
-    // Kiểm tra mật khẩu mới phải có chữ thường
-    if (!/[a-z]/.test(body.newPassword)) {
-      throw new BadRequestException('Mật khẩu mới phải có ít nhất 1 chữ thường');
-    }
-
-    // Kiểm tra mật khẩu mới phải có số
-    if (!/[0-9]/.test(body.newPassword)) {
-      throw new BadRequestException('Mật khẩu mới phải có ít nhất 1 chữ số');
-    }
-
-    // Kiểm tra mật khẩu mới phải có ký tự đặc biệt
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(body.newPassword)) {
-      throw new BadRequestException('Mật khẩu mới phải có ít nhất 1 ký tự đặc biệt (!@#$%^&*...)');
-    }
-
-    if (body.oldPassword === body.newPassword) {
-      throw new BadRequestException('Mật khẩu mới phải khác mật khẩu cũ');
-    }
-
-    const result = await this.authService.changePassword(
-      req.user._id,
-      body.oldPassword,
-      body.newPassword,
-    );
-
-    if (!result.success) {
-      throw new BadRequestException(result.message);
-    }
-
-    return {
-      success: true,
-      message: 'Đổi mật khẩu thành công',
-    };
   }
+
+  // ── Quên mật khẩu ────────────────────────────────────────────────────────
 
   @Post('forgot-password')
-  async forgotPassword(@Body() body: { email: string }) {
-    if (!body.email) {
-      throw new BadRequestException('Vui lòng nhập email');
+  async forgotPassword(@Body() dto: ForgotPasswordDto, @Res() res: Response) {
+    try {
+      await this.authService.forgotPassword(dto);
+      return res.status(HttpStatus.OK).json(new ApiResponse('Mã xác thực đã gửi đến email của bạn', null));
+    } catch (e) {
+      return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
-
-    const result = await this.authService.forgotPassword(body.email);
-
-    if (!result.success) {
-      throw new BadRequestException(result.message);
-    }
-
-    return {
-      success: true,
-      message: result.message,
-    };
   }
 
+  // ── Đặt lại mật khẩu ─────────────────────────────────────────────────────
+
   @Post('reset-password')
-  async resetPassword(@Body() body: { resetToken: string; newPassword: string }) {
-    if (!body.resetToken || !body.newPassword) {
-      throw new BadRequestException('Vui lòng nhập mã xác thực và mật khẩu mới');
+  async resetPassword(@Body() dto: ResetPasswordDto, @Res() res: Response) {
+    try {
+      await this.authService.resetPassword(dto);
+      return res.status(HttpStatus.OK).json(new ApiResponse('Đặt lại mật khẩu thành công', null));
+    } catch (e) {
+      return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
+  }
 
-    if (body.newPassword.length < 6) {
-      throw new BadRequestException('Mật khẩu mới phải có ít nhất 6 ký tự');
+  // ── Toggle 2FA ────────────────────────────────────────────────────────────
+
+  @Put('toggle-2fa/:id')
+  @UseGuards(JwtAuthGuard)
+  async toggle2FA(
+    @Param('id') id: string,
+    @Body() dto: Toggle2faDto,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.authService.toggle2FA(id, dto.enabled);
+      return res.status(HttpStatus.OK).json(
+        new ApiResponse(
+          dto.enabled ? 'Đã bật xác thực 2 bước' : 'Đã tắt xác thực 2 bước',
+          null,
+        ),
+      );
+    } catch (e) {
+      return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
+  }
 
-    const result = await this.authService.resetPassword(
-      body.resetToken,
-      body.newPassword,
-    );
+  // ── Verify 2FA ────────────────────────────────────────────────────────────
 
-    if (!result.success) {
-      throw new BadRequestException(result.message);
+  @Post('verify-2fa')
+  async verify2FA(@Body() dto: Verify2faDto, @Res() res: Response) {
+    try {
+      const result = await this.authService.verify2FA(dto.emailOrPhone, dto.code);
+      return res.status(HttpStatus.OK).json(new ApiResponse('Xác thực 2 bước thành công', result));
+    } catch (e) {
+      return res.status(HttpStatus.BAD_REQUEST).json(new ApiResponse(e.message, null));
     }
-
-    return {
-      success: true,
-      message: 'Đặt lại mật khẩu thành công',
-    };
   }
 }

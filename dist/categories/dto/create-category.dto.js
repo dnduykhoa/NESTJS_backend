@@ -12,21 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateCategoryDto = void 0;
 const class_validator_1 = require("class-validator");
 class CreateCategoryDto {
-    name;
-    description;
-    displayOrder;
-    isActive;
-    parent;
 }
 exports.CreateCategoryDto = CreateCategoryDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)({ message: 'Tên danh mục không được để trống' }),
     (0, class_validator_1.MaxLength)(100),
     __metadata("design:type", String)
 ], CreateCategoryDto.prototype, "name", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateCategoryDto.prototype, "description", void 0);
 __decorate([
@@ -41,7 +35,6 @@ __decorate([
 ], CreateCategoryDto.prototype, "isActive", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreateCategoryDto.prototype, "parent", void 0);
+], CreateCategoryDto.prototype, "parentId", void 0);
 //# sourceMappingURL=create-category.dto.js.map

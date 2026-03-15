@@ -11,24 +11,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttributeGroupSchema = exports.AttributeGroup = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-let AttributeGroup = class AttributeGroup extends mongoose_2.Document {
-    name;
-    description;
-    displayOrder;
-    isActive;
+let AttributeGroup = class AttributeGroup {
 };
 exports.AttributeGroup = AttributeGroup;
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, maxlength: 100 }),
+    (0, mongoose_1.Prop)({ required: true, unique: true, maxlength: 100 }),
     __metadata("design:type", String)
 ], AttributeGroup.prototype, "name", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ maxlength: 500 }),
+    (0, mongoose_1.Prop)({ default: null, type: String, maxlength: 500 }),
     __metadata("design:type", String)
 ], AttributeGroup.prototype, "description", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ default: 0 }),
+    (0, mongoose_1.Prop)({ default: 0, type: Number }),
     __metadata("design:type", Number)
 ], AttributeGroup.prototype, "displayOrder", void 0);
 __decorate([
@@ -39,6 +34,4 @@ exports.AttributeGroup = AttributeGroup = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], AttributeGroup);
 exports.AttributeGroupSchema = mongoose_1.SchemaFactory.createForClass(AttributeGroup);
-exports.AttributeGroupSchema.index({ isActive: 1 });
-exports.AttributeGroupSchema.index({ displayOrder: 1 });
 //# sourceMappingURL=attribute-group.schema.js.map

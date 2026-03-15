@@ -1,43 +1,14 @@
+import { Response } from 'express';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpdateUserRolesDto } from './dto/update-user-roles.dto';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
-    getProfile(req: any): Promise<{
-        success: boolean;
-        user: {
-            id: any;
-            username: any;
-            email: any;
-            fullName: any;
-            avatarUrl: any;
-            birthday: any;
-            role: any;
-            loginCount: any;
-        };
-    }>;
-    updateProfile(req: any, body: {
-        fullName?: string;
-        birthday?: string;
-        avatarUrl?: string;
-    }): Promise<{
-        success: boolean;
-        message: string;
-        user: {
-            fullName: string | undefined;
-            birthday: Date | undefined;
-            avatarUrl: string | undefined;
-        };
-    }>;
-    uploadAvatar(req: any, file: Express.Multer.File): Promise<{
-        success: boolean;
-        message: string;
-        avatarUrl: string;
-    }>;
-    create(createUserDto: CreateUserDto): string;
-    findAll(): string;
-    findOne(id: string): string;
-    update(id: string, updateUserDto: UpdateUserDto): string;
-    remove(id: string): string;
+    getProfile(id: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    updateProfile(id: string, dto: UpdateProfileDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    getAllUsers(res: Response): Promise<Response<any, Record<string, any>>>;
+    searchUsers(keyword: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    deleteUser(id: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    updateRoles(id: string, dto: UpdateUserRolesDto, res: Response): Promise<Response<any, Record<string, any>>>;
 }

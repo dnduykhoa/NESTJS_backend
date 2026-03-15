@@ -1,13 +1,11 @@
-import { IsString, IsOptional, IsBoolean, IsNumber, MaxLength } from 'class-validator';
-import { Types } from 'mongoose';
+import { IsNotEmpty, IsOptional, IsBoolean, IsNumber, MaxLength } from 'class-validator';
 
 export class CreateCategoryDto {
-  @IsString()
+  @IsNotEmpty({ message: 'Tên danh mục không được để trống' })
   @MaxLength(100)
-  name!: string;
+  name: string;
 
   @IsOptional()
-  @IsString()
   description?: string;
 
   @IsOptional()
@@ -19,6 +17,5 @@ export class CreateCategoryDto {
   isActive?: boolean;
 
   @IsOptional()
-  @IsString()
-  parent?: string;
+  parentId?: string; // ObjectId of parent category
 }

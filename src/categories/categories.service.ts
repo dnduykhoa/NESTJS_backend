@@ -1,83 +1,127 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Category, CategoryDocument } from './schemas/category.schema';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Category } from './schemas/category.schema';
 
 @Injectable()
 export class CategoriesService {
   constructor(
-    @InjectModel(Category.name) private categoryModel: Model<Category>,
-    @InjectModel('Product') private productModel: Model<any>,
+    @InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>,
+    @InjectModel('Product') private readonly productModel: Model<any>,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto) {
-    const createdCategory = new this.categoryModel(createCategoryDto);
-    return createdCategory.save();
-  }
-
-  async findAll() {
-    return this.categoryModel.find().populate('parent').exec();
-  }
-
-  async findRoot() {
-    return this.categoryModel.find({ parent: null }).exec();
-  }
-
-  async findChildren(id: string) {
-    return this.categoryModel.find({ parent: id }).exec();
-  }
-
-  async findActive() {
-    return this.categoryModel.find({ isActive: true }).exec();
-  }
-
-  async search(name: string) {
+  async findAll(): Promise<CategoryDocument[]> {
     return this.categoryModel
-      .find({ name: { $regex: name, $options: 'i' } })
+      .find()
+      .populate('parent')
+      .sort({ displayOrder: 1, name: 1 })
       .exec();
   }
 
-  async findOne(id: string) {
+  async findRoot(): Promise<CategoryDocument[]> {
+    return this.categoryModel
+      .find({ parent: null })
+      .sort({ displayOrder: 1, name: 1 })
+      .exec();
+  }
+
+  async findChildren(id: string): Promise<CategoryDocument[]> {
+    return this.categoryModel
+      .find({ parent: id })
+      .sort({ displayOrder: 1, name: 1 })
+      .exec();
+  }
+
+  async findActive(): Promise<CategoryDocument[]> {
+    return this.categoryModel
+      .find({ isActive: true })
+      .populate('parent')
+      .sort({ displayOrder: 1, name: 1 })
+      .exec();
+  }
+
+  async search(name: string): Promise<CategoryDocument[]> {
+    return this.categoryModel
+      .find({ name: { $regex: name, $options: 'i' } })
+      .populate('parent')
+      .sort({ displayOrder: 1 })
+      .exec();
+  }
+
+  async findById(id: string): Promise<CategoryDocument> {
     const category = await this.categoryModel.findById(id).populate('parent').exec();
-    if (!category) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
-    }
+    if (!category) throw new NotFoundException(`Không tìm thấy danh mục với ID: ${id}`);
     return category;
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    const updatedCategory = await this.categoryModel
-      .findByIdAndUpdate(id, updateCategoryDto, { new: true })
-      .exec();
-    if (!updatedCategory) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
+  async create(dto: CreateCategoryDto): Promise<CategoryDocument> {
+    const existing = await this.categoryModel.findOne({ name: dto.name });
+    if (existing) throw new Error(`Đã tồn tại danh mục với tên: ${dto.name}`);
+
+    let parent: string | null = null;
+    if (dto.parentId) {
+      const parentCategory = await this.categoryModel.findById(dto.parentId);
+      if (!parentCategory) throw new NotFoundException(`Không tìm thấy danh mục cha với ID: ${dto.parentId}`);
+      parent = dto.parentId;
     }
-    return updatedCategory;
+
+    return new this.categoryModel({
+      name: dto.name,
+      description: dto.description,
+      displayOrder: dto.displayOrder ?? 0,
+      isActive: dto.isActive ?? true,
+      parent,
+    }).save();
   }
 
-  async remove(id: string) {
-    // Kiểm tra danh mục con
-    const childrenCount = await this.categoryModel.countDocuments({ parent: id }).exec();
-    if (childrenCount > 0) {
+  async update(id: string, dto: UpdateCategoryDto): Promise<CategoryDocument> {
+    const category = await this.findById(id);
+
+    if (dto.name && dto.name !== category.name) {
+      const existing = await this.categoryModel.findOne({ name: dto.name });
+      if (existing) throw new Error(`Đã tồn tại danh mục với tên: ${dto.name}`);
+    }
+
+    if (dto.parentId !== undefined) {
+      if (dto.parentId === null || dto.parentId === '') {
+        (category as any).parent = null;
+      } else {
+        if (dto.parentId === id) {
+          throw new BadRequestException('Danh mục không thể là cha của chính nó');
+        }
+        const parentCategory = await this.categoryModel.findById(dto.parentId);
+        if (!parentCategory) throw new NotFoundException(`Không tìm thấy danh mục cha với ID: ${dto.parentId}`);
+        (category as any).parent = dto.parentId;
+      }
+    }
+
+    if (dto.name !== undefined) category.name = dto.name;
+    if (dto.description !== undefined) category.description = dto.description;
+    if (dto.displayOrder !== undefined) category.displayOrder = dto.displayOrder;
+    if (dto.isActive !== undefined) category.isActive = dto.isActive;
+
+    return category.save();
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.findById(id);
+
+    const childCount = await this.categoryModel.countDocuments({ parent: id });
+    if (childCount > 0) {
       throw new BadRequestException(
-        `Cannot delete this category because it has ${childrenCount} child categories. Please delete or reassign them first.`
+        `Không thể xóa danh mục này vì còn ${childCount} danh mục con. Hãy xóa hoặc chuyển danh mục con trước`,
       );
     }
 
-    // Kiểm tra sản phẩm
-    const productCount = await this.productModel.countDocuments({ category: id }).exec();
+    const productCount = await this.productModel.countDocuments({ category: id });
     if (productCount > 0) {
       throw new BadRequestException(
-        `Cannot delete this category because it has ${productCount} products. Please reassign or delete the products first.`
+        `Không thể xóa danh mục này vì còn ${productCount} sản phẩm. Hãy xóa hoặc chuyển sản phẩm trước`,
       );
     }
 
-    const deletedCategory = await this.categoryModel.findByIdAndDelete(id).exec();
-    if (!deletedCategory) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
-    }
-    return { message: 'Category deleted successfully', category: deletedCategory };
+    await this.categoryModel.findByIdAndDelete(id);
   }
 }

@@ -17,56 +17,67 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const attribute_group_schema_1 = require("../schemas/attribute-group.schema");
+const attribute_definition_schema_1 = require("../schemas/attribute-definition.schema");
 let AttributeGroupsService = class AttributeGroupsService {
-    attributeGroupModel;
-    attributeDefinitionModel;
     constructor(attributeGroupModel, attributeDefinitionModel) {
         this.attributeGroupModel = attributeGroupModel;
         this.attributeDefinitionModel = attributeDefinitionModel;
     }
-    async create(dto) {
-        const group = new this.attributeGroupModel(dto);
-        return group.save();
+    async getAllGroups() {
+        return this.attributeGroupModel.find().sort({ displayOrder: 1, name: 1 }).exec();
     }
-    async findAll() {
-        return this.attributeGroupModel.find().exec();
+    async getActiveGroups() {
+        return this.attributeGroupModel
+            .find({ isActive: true })
+            .sort({ displayOrder: 1, name: 1 })
+            .exec();
     }
-    async findActive() {
-        return this.attributeGroupModel.find({ isActive: true }).exec();
-    }
-    async findOne(id) {
+    async getGroupById(id) {
         const group = await this.attributeGroupModel.findById(id).exec();
         if (!group) {
-            throw new common_1.NotFoundException(`Attribute group with ID ${id} not found`);
+            throw new common_1.NotFoundException(`Không tìm thấy nhóm thuộc tính với ID: ${id}`);
         }
         return group;
     }
-    async update(id, dto) {
-        const group = await this.attributeGroupModel
-            .findByIdAndUpdate(id, dto, { new: true })
+    async createGroup(dto) {
+        const existing = await this.attributeGroupModel.findOne({ name: dto.name }).exec();
+        if (existing) {
+            throw new common_1.BadRequestException(`Đã tồn tại nhóm thuộc tính với tên: ${dto.name}`);
+        }
+        const group = new this.attributeGroupModel({
+            ...dto,
+            displayOrder: dto.displayOrder ?? 0,
+            isActive: dto.isActive ?? true,
+        });
+        return group.save();
+    }
+    async updateGroup(id, dto) {
+        const group = await this.getGroupById(id);
+        if (dto.name && dto.name !== group.name) {
+            const existing = await this.attributeGroupModel.findOne({ name: dto.name }).exec();
+            if (existing) {
+                throw new common_1.BadRequestException(`Đã tồn tại nhóm thuộc tính với tên: ${dto.name}`);
+            }
+        }
+        Object.assign(group, dto);
+        return group.save();
+    }
+    async deleteGroup(id) {
+        await this.getGroupById(id);
+        const definitionCount = await this.attributeDefinitionModel
+            .countDocuments({ attributeGroup: new mongoose_2.Types.ObjectId(id) })
             .exec();
-        if (!group) {
-            throw new common_1.NotFoundException(`Attribute group with ID ${id} not found`);
+        if (definitionCount > 0) {
+            throw new common_1.BadRequestException(`Không thể xóa nhóm thuộc tính này vì còn ${definitionCount} định nghĩa thuộc tính. Hãy xóa hoặc chuyển các thuộc tính trước`);
         }
-        return group;
-    }
-    async remove(id) {
-        const defCount = await this.attributeDefinitionModel.countDocuments({ attributeGroup: id }).exec();
-        if (defCount > 0) {
-            throw new common_1.BadRequestException(`Cannot delete this group because it has ${defCount} attribute definitions. Please delete or reassign them first.`);
-        }
-        const group = await this.attributeGroupModel.findByIdAndDelete(id).exec();
-        if (!group) {
-            throw new common_1.NotFoundException(`Attribute group with ID ${id} not found`);
-        }
-        return { message: 'Attribute group deleted successfully', group };
+        await this.attributeGroupModel.findByIdAndDelete(id).exec();
     }
 };
 exports.AttributeGroupsService = AttributeGroupsService;
 exports.AttributeGroupsService = AttributeGroupsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(attribute_group_schema_1.AttributeGroup.name)),
-    __param(1, (0, mongoose_1.InjectModel)('AttributeDefinition')),
+    __param(1, (0, mongoose_1.InjectModel)(attribute_definition_schema_1.AttributeDefinition.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
         mongoose_2.Model])
 ], AttributeGroupsService);

@@ -1,17 +1,11 @@
-import { IsString, IsOptional, IsBoolean, IsNumber, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsBoolean, IsNumber, MaxLength } from 'class-validator';
 
 export class CreateBrandDto {
-  @IsString()
-  @MaxLength(200)
-  name!: string;
+  @IsNotEmpty({ message: 'Tên thương hiệu không được để trống' })
+  @MaxLength(100)
+  name: string;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  logoUrl?: string;
-
-  @IsOptional()
-  @IsString()
   description?: string;
 
   @IsOptional()

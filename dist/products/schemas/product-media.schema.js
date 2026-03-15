@@ -12,15 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductMediaSchema = exports.ProductMedia = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 let ProductMedia = class ProductMedia {
-    mediaUrl;
-    mediaType;
-    isPrimary;
-    displayOrder;
-    altText;
 };
 exports.ProductMedia = ProductMedia;
 __decorate([
-    (0, mongoose_1.Prop)({ required: true }),
+    (0, mongoose_1.Prop)({ required: true, maxlength: 500 }),
     __metadata("design:type", String)
 ], ProductMedia.prototype, "mediaUrl", void 0);
 __decorate([
@@ -36,7 +31,7 @@ __decorate([
     __metadata("design:type", Number)
 ], ProductMedia.prototype, "displayOrder", void 0);
 __decorate([
-    (0, mongoose_1.Prop)(),
+    (0, mongoose_1.Prop)({ default: null }),
     __metadata("design:type", String)
 ], ProductMedia.prototype, "altText", void 0);
 exports.ProductMedia = ProductMedia = __decorate([

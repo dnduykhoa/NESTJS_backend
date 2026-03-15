@@ -1,62 +1,30 @@
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { Toggle2faDto } from './dto/toggle-2fa.dto';
+import { Verify2faDto } from './dto/verify-2fa.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
 export declare class AuthController {
     private readonly authService;
     private readonly jwtService;
     constructor(authService: AuthService, jwtService: JwtService);
-    register(body: any): Promise<import("mongoose").Document<unknown, {}, import("../users/schemas/user.schema").User, {}, import("mongoose").DefaultSchemaOptions> & import("../users/schemas/user.schema").User & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    login(body: {
-        username: string;
-        password: string;
-    }): Promise<{
-        success: boolean;
-        message: string;
-        token?: undefined;
-    } | {
-        success: boolean;
-        message: string;
-        token: string;
-    }>;
-    logout(req: any): Promise<{
-        success: boolean;
-        message: string;
-    }>;
+    checkUsername(username: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    checkEmail(email: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    checkPhone(phone: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    register(dto: RegisterDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    login(dto: LoginDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    googleLogin(dto: GoogleLoginDto, res: Response): Promise<Response<any, Record<string, any>>>;
     googleAuth(): Promise<void>;
-    googleAuthCallback(req: any): Promise<{
-        success: boolean;
-        message: string;
-        token: string;
-        user: {
-            email: any;
-            fullName: any;
-            avatarUrl: any;
-        };
-    }>;
-    changePassword(req: any, body: {
-        oldPassword: string;
-        newPassword: string;
-        confirmNewPassword: string;
-    }): Promise<{
-        success: boolean;
-        message: string;
-    }>;
-    forgotPassword(body: {
-        email: string;
-    }): Promise<{
-        success: boolean;
-        message: string;
-    }>;
-    resetPassword(body: {
-        resetToken: string;
-        newPassword: string;
-    }): Promise<{
-        success: boolean;
-        message: string;
-    }>;
+    googleCallback(user: any, res: Response): Promise<void>;
+    logout(res: Response): Promise<Response<any, Record<string, any>>>;
+    changePassword(id: string, dto: ChangePasswordDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    forgotPassword(dto: ForgotPasswordDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    resetPassword(dto: ResetPasswordDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    toggle2FA(id: string, dto: Toggle2faDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    verify2FA(dto: Verify2faDto, res: Response): Promise<Response<any, Record<string, any>>>;
 }

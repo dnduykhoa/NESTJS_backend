@@ -12,16 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateRoleDto = void 0;
 const class_validator_1 = require("class-validator");
 class CreateRoleDto {
-    name;
-    description;
 }
 exports.CreateRoleDto = CreateRoleDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNotEmpty)({ message: 'Tên vai trò không được để trống' }),
+    (0, class_validator_1.MaxLength)(50),
     __metadata("design:type", String)
 ], CreateRoleDto.prototype, "name", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateRoleDto.prototype, "description", void 0);

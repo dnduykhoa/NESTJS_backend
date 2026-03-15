@@ -12,27 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateBrandDto = void 0;
 const class_validator_1 = require("class-validator");
 class CreateBrandDto {
-    name;
-    logoUrl;
-    description;
-    displayOrder;
-    isActive;
 }
 exports.CreateBrandDto = CreateBrandDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(200),
+    (0, class_validator_1.IsNotEmpty)({ message: 'Tên thương hiệu không được để trống' }),
+    (0, class_validator_1.MaxLength)(100),
     __metadata("design:type", String)
 ], CreateBrandDto.prototype, "name", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(500),
-    __metadata("design:type", String)
-], CreateBrandDto.prototype, "logoUrl", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateBrandDto.prototype, "description", void 0);
 __decorate([

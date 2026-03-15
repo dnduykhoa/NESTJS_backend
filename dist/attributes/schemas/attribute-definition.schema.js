@@ -19,16 +19,7 @@ var DataType;
     DataType["BOOLEAN"] = "BOOLEAN";
     DataType["LIST"] = "LIST";
 })(DataType || (exports.DataType = DataType = {}));
-let AttributeDefinition = class AttributeDefinition extends mongoose_2.Document {
-    name;
-    attrKey;
-    dataType;
-    unit;
-    isFilterable;
-    isRequired;
-    displayOrder;
-    isActive;
-    attributeGroup;
+let AttributeDefinition = class AttributeDefinition {
 };
 exports.AttributeDefinition = AttributeDefinition;
 __decorate([
@@ -36,20 +27,19 @@ __decorate([
     __metadata("design:type", String)
 ], AttributeDefinition.prototype, "name", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true, maxlength: 100 }),
+    (0, mongoose_1.Prop)({ required: true, unique: true, maxlength: 100 }),
     __metadata("design:type", String)
 ], AttributeDefinition.prototype, "attrKey", void 0);
 __decorate([
     (0, mongoose_1.Prop)({
-        required: true,
-        enum: DataType,
         type: String,
+        enum: DataType,
         default: DataType.STRING,
     }),
     __metadata("design:type", String)
 ], AttributeDefinition.prototype, "dataType", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ maxlength: 50 }),
+    (0, mongoose_1.Prop)({ default: null, maxlength: 50 }),
     __metadata("design:type", String)
 ], AttributeDefinition.prototype, "unit", void 0);
 __decorate([
@@ -61,7 +51,7 @@ __decorate([
     __metadata("design:type", Boolean)
 ], AttributeDefinition.prototype, "isRequired", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ default: 0 }),
+    (0, mongoose_1.Prop)({ default: 0, type: Number }),
     __metadata("design:type", Number)
 ], AttributeDefinition.prototype, "displayOrder", void 0);
 __decorate([
@@ -69,14 +59,14 @@ __decorate([
     __metadata("design:type", Boolean)
 ], AttributeDefinition.prototype, "isActive", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'AttributeGroup' }),
+    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'AttributeGroup', default: null }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], AttributeDefinition.prototype, "attributeGroup", void 0);
 exports.AttributeDefinition = AttributeDefinition = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], AttributeDefinition);
 exports.AttributeDefinitionSchema = mongoose_1.SchemaFactory.createForClass(AttributeDefinition);
-exports.AttributeDefinitionSchema.index({ attrKey: 1 }, { unique: true });
-exports.AttributeDefinitionSchema.index({ isActive: 1 });
-exports.AttributeDefinitionSchema.index({ displayOrder: 1 });
+exports.AttributeDefinitionSchema.index({ attrKey: 1 });
+exports.AttributeDefinitionSchema.index({ isFilterable: 1 });
+exports.AttributeDefinitionSchema.index({ attributeGroup: 1 });
 //# sourceMappingURL=attribute-definition.schema.js.map

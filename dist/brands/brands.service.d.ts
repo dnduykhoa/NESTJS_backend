@@ -1,61 +1,18 @@
 import { Model } from 'mongoose';
+import { BrandDocument } from './schemas/brand.schema';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
-import { Brand } from './schemas/brand.schema';
+import { FileStorageService } from '../utils/file-storage.service';
 export declare class BrandsService {
-    private brandModel;
-    private productModel;
-    constructor(brandModel: Model<Brand>, productModel: Model<any>);
-    create(createBrandDto: CreateBrandDto): Promise<import("mongoose").Document<unknown, {}, Brand, {}, import("mongoose").DefaultSchemaOptions> & Brand & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    findAll(): Promise<(import("mongoose").Document<unknown, {}, Brand, {}, import("mongoose").DefaultSchemaOptions> & Brand & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[]>;
-    findActive(): Promise<(import("mongoose").Document<unknown, {}, Brand, {}, import("mongoose").DefaultSchemaOptions> & Brand & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[]>;
-    search(name: string): Promise<(import("mongoose").Document<unknown, {}, Brand, {}, import("mongoose").DefaultSchemaOptions> & Brand & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[]>;
-    findOne(id: string): Promise<import("mongoose").Document<unknown, {}, Brand, {}, import("mongoose").DefaultSchemaOptions> & Brand & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    update(id: string, updateBrandDto: UpdateBrandDto): Promise<import("mongoose").Document<unknown, {}, Brand, {}, import("mongoose").DefaultSchemaOptions> & Brand & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    remove(id: string): Promise<{
-        message: string;
-        brand: import("mongoose").Document<unknown, {}, Brand, {}, import("mongoose").DefaultSchemaOptions> & Brand & Required<{
-            _id: import("mongoose").Types.ObjectId;
-        }> & {
-            __v: number;
-        } & {
-            id: string;
-        };
-    }>;
+    private readonly brandModel;
+    private readonly productModel;
+    private readonly fileStorage;
+    constructor(brandModel: Model<BrandDocument>, productModel: Model<any>, fileStorage: FileStorageService);
+    findAll(): Promise<BrandDocument[]>;
+    findActive(): Promise<BrandDocument[]>;
+    findById(id: string): Promise<BrandDocument>;
+    search(name: string): Promise<BrandDocument[]>;
+    create(dto: CreateBrandDto, logoFile?: Express.Multer.File): Promise<BrandDocument>;
+    update(id: string, dto: UpdateBrandDto, logoFile?: Express.Multer.File): Promise<BrandDocument>;
+    remove(id: string): Promise<void>;
 }

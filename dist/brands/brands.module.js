@@ -9,10 +9,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BrandsModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
-const brands_service_1 = require("./brands.service");
 const brands_controller_1 = require("./brands.controller");
+const brands_service_1 = require("./brands.service");
 const brand_schema_1 = require("./schemas/brand.schema");
-const product_schemas_1 = require("../products/schemas/product.schemas");
+const product_schema_1 = require("../products/schemas/product.schema");
+const file_storage_service_1 = require("../utils/file-storage.service");
 let BrandsModule = class BrandsModule {
 };
 exports.BrandsModule = BrandsModule;
@@ -21,11 +22,11 @@ exports.BrandsModule = BrandsModule = __decorate([
         imports: [
             mongoose_1.MongooseModule.forFeature([
                 { name: brand_schema_1.Brand.name, schema: brand_schema_1.BrandSchema },
-                { name: 'Product', schema: product_schemas_1.ProductSchema },
+                { name: 'Product', schema: product_schema_1.ProductSchema },
             ]),
         ],
         controllers: [brands_controller_1.BrandsController],
-        providers: [brands_service_1.BrandsService],
+        providers: [brands_service_1.BrandsService, file_storage_service_1.FileStorageService],
         exports: [brands_service_1.BrandsService],
     })
 ], BrandsModule);

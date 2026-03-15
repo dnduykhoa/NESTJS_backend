@@ -2,20 +2,20 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ _id: true })
 export class ProductMedia {
-  @Prop({ required: true })
-  mediaUrl!: string;
+  @Prop({ required: true, maxlength: 500 })
+  mediaUrl: string;
 
   @Prop({ required: true, enum: ['IMAGE', 'VIDEO'], default: 'IMAGE' })
-  mediaType!: string;
+  mediaType: string;
 
   @Prop({ default: false })
-  isPrimary?: boolean;
+  isPrimary: boolean;
 
   @Prop({ default: 0 })
-  displayOrder?: number;
+  displayOrder: number;
 
-  @Prop()
-  altText?: string;
+  @Prop({ default: null })
+  altText: string;
 }
 
 export const ProductMediaSchema = SchemaFactory.createForClass(ProductMedia);

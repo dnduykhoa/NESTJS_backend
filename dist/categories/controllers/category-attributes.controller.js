@@ -15,67 +15,126 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoryAttributesController = void 0;
 const common_1 = require("@nestjs/common");
 const category_attributes_service_1 = require("../services/category-attributes.service");
-const create_category_attribute_dto_1 = require("../dto/category-attributes/create-category-attribute.dto");
-const update_category_attribute_dto_1 = require("../dto/category-attributes/update-category-attribute.dto");
+const create_category_attribute_dto_1 = require("../dto/create-category-attribute.dto");
+const update_category_attribute_dto_1 = require("../dto/update-category-attribute.dto");
+const api_response_dto_1 = require("../../common/dto/api-response.dto");
 let CategoryAttributesController = class CategoryAttributesController {
-    categoryAttributesService;
     constructor(categoryAttributesService) {
         this.categoryAttributesService = categoryAttributesService;
     }
-    assign(dto) {
-        return this.categoryAttributesService.assign(dto);
+    async getByCategory(categoryId, res) {
+        try {
+            const attributes = await this.categoryAttributesService.getByCategory(categoryId);
+            return res.status(common_1.HttpStatus.OK).json(new api_response_dto_1.ApiResponse('Lấy thuộc tính danh mục thành công', attributes));
+        }
+        catch (e) {
+            return res.status(common_1.HttpStatus.BAD_REQUEST).json(new api_response_dto_1.ApiResponse(e.message, null));
+        }
     }
-    findByCategory(categoryId) {
-        return this.categoryAttributesService.findByCategory(categoryId);
+    async assign(body, qCategoryId, qAttrDefId, qIsRequired, qDisplayOrder, res) {
+        try {
+            const dto = {
+                categoryId: body.categoryId || qCategoryId,
+                attrDefId: body.attrDefId || qAttrDefId,
+                isRequired: body.isRequired !== undefined
+                    ? body.isRequired
+                    : qIsRequired !== undefined ? qIsRequired === 'true' : undefined,
+                displayOrder: body.displayOrder !== undefined
+                    ? body.displayOrder
+                    : qDisplayOrder !== undefined ? Number(qDisplayOrder) : undefined,
+            };
+            const assignment = await this.categoryAttributesService.assign(dto);
+            return res.status(common_1.HttpStatus.CREATED).json(new api_response_dto_1.ApiResponse('Gán thuộc tính cho danh mục thành công', assignment));
+        }
+        catch (e) {
+            return res.status(common_1.HttpStatus.BAD_REQUEST).json(new api_response_dto_1.ApiResponse(e.message, null));
+        }
     }
-    update(id, dto) {
-        return this.categoryAttributesService.update(id, dto);
+    async updateAssignment(id, body, qIsRequired, qDisplayOrder, res) {
+        try {
+            const dto = {
+                isRequired: body.isRequired !== undefined
+                    ? body.isRequired
+                    : qIsRequired !== undefined ? qIsRequired === 'true' : undefined,
+                displayOrder: body.displayOrder !== undefined
+                    ? body.displayOrder
+                    : qDisplayOrder !== undefined ? Number(qDisplayOrder) : undefined,
+            };
+            const assignment = await this.categoryAttributesService.updateAssignment(id, dto);
+            return res.status(common_1.HttpStatus.OK).json(new api_response_dto_1.ApiResponse('Cập nhật liên kết thuộc tính-danh mục thành công', assignment));
+        }
+        catch (e) {
+            return res.status(common_1.HttpStatus.BAD_REQUEST).json(new api_response_dto_1.ApiResponse(e.message, null));
+        }
     }
-    remove(id) {
-        return this.categoryAttributesService.remove(id);
+    async removeByCategoryAndDef(categoryId, attrDefId, res) {
+        try {
+            await this.categoryAttributesService.removeByCategoryAndDef(categoryId, attrDefId);
+            return res.status(common_1.HttpStatus.OK).json(new api_response_dto_1.ApiResponse('Xóa liên kết thuộc tính-danh mục thành công', null));
+        }
+        catch (e) {
+            return res.status(common_1.HttpStatus.BAD_REQUEST).json(new api_response_dto_1.ApiResponse(e.message, null));
+        }
     }
-    removeByKeys(categoryId, attrDefId) {
-        return this.categoryAttributesService.removeByKeys(categoryId, attrDefId);
+    async removeById(id, res) {
+        try {
+            await this.categoryAttributesService.removeById(id);
+            return res.status(common_1.HttpStatus.OK).json(new api_response_dto_1.ApiResponse('Xóa liên kết thuộc tính-danh mục thành công', null));
+        }
+        catch (e) {
+            return res.status(common_1.HttpStatus.BAD_REQUEST).json(new api_response_dto_1.ApiResponse(e.message, null));
+        }
     }
 };
 exports.CategoryAttributesController = CategoryAttributesController;
 __decorate([
-    (0, common_1.Post)('assign'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_category_attribute_dto_1.CreateCategoryAttributeDto]),
-    __metadata("design:returntype", void 0)
-], CategoryAttributesController.prototype, "assign", null);
-__decorate([
     (0, common_1.Get)('by-category/:categoryId'),
     __param(0, (0, common_1.Param)('categoryId')),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], CategoryAttributesController.prototype, "findByCategory", null);
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], CategoryAttributesController.prototype, "getByCategory", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
+    (0, common_1.Post)('assign'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Query)('categoryId')),
+    __param(2, (0, common_1.Query)('attrDefId')),
+    __param(3, (0, common_1.Query)('isRequired')),
+    __param(4, (0, common_1.Query)('displayOrder')),
+    __param(5, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_category_attribute_dto_1.CreateCategoryAttributeDto, String, String, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], CategoryAttributesController.prototype, "assign", null);
+__decorate([
+    (0, common_1.Put)('update/:id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Query)('isRequired')),
+    __param(3, (0, common_1.Query)('displayOrder')),
+    __param(4, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_category_attribute_dto_1.UpdateCategoryAttributeDto]),
-    __metadata("design:returntype", void 0)
-], CategoryAttributesController.prototype, "update", null);
+    __metadata("design:paramtypes", [String, update_category_attribute_dto_1.UpdateCategoryAttributeDto, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], CategoryAttributesController.prototype, "updateAssignment", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], CategoryAttributesController.prototype, "remove", null);
-__decorate([
-    (0, common_1.Delete)(),
+    (0, common_1.Delete)('remove'),
     __param(0, (0, common_1.Query)('categoryId')),
     __param(1, (0, common_1.Query)('attrDefId')),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", void 0)
-], CategoryAttributesController.prototype, "removeByKeys", null);
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], CategoryAttributesController.prototype, "removeByCategoryAndDef", null);
+__decorate([
+    (0, common_1.Delete)('remove/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], CategoryAttributesController.prototype, "removeById", null);
 exports.CategoryAttributesController = CategoryAttributesController = __decorate([
     (0, common_1.Controller)('category-attributes'),
     __metadata("design:paramtypes", [category_attributes_service_1.CategoryAttributesService])

@@ -17,70 +17,116 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const attribute_definition_schema_1 = require("../schemas/attribute-definition.schema");
+const attribute_group_schema_1 = require("../schemas/attribute-group.schema");
 let AttributeDefinitionsService = class AttributeDefinitionsService {
-    attributeDefinitionModel;
-    categoryAttributeModel;
-    constructor(attributeDefinitionModel, categoryAttributeModel) {
+    constructor(attributeDefinitionModel, attributeGroupModel) {
         this.attributeDefinitionModel = attributeDefinitionModel;
-        this.categoryAttributeModel = categoryAttributeModel;
+        this.attributeGroupModel = attributeGroupModel;
     }
-    async create(dto) {
-        const def = new this.attributeDefinitionModel(dto);
-        return def.save();
+    async getAllDefinitions() {
+        return this.attributeDefinitionModel
+            .find()
+            .populate('attributeGroup')
+            .sort({ displayOrder: 1, name: 1 })
+            .exec();
     }
-    async findAll() {
-        return this.attributeDefinitionModel.find().populate('attributeGroup').exec();
+    async getActiveDefinitions() {
+        return this.attributeDefinitionModel
+            .find({ isActive: true })
+            .populate('attributeGroup')
+            .sort({ displayOrder: 1, name: 1 })
+            .exec();
     }
-    async findActive() {
-        return this.attributeDefinitionModel.find({ isActive: true }).populate('attributeGroup').exec();
+    async getFilterableDefinitions() {
+        return this.attributeDefinitionModel
+            .find({ isFilterable: true })
+            .populate('attributeGroup')
+            .sort({ displayOrder: 1, name: 1 })
+            .exec();
     }
-    async findFilterable() {
-        return this.attributeDefinitionModel.find({ isFilterable: true }).populate('attributeGroup').exec();
+    async getDefinitionsByGroup(groupId) {
+        return this.attributeDefinitionModel
+            .find({ attributeGroup: new mongoose_2.Types.ObjectId(groupId) })
+            .populate('attributeGroup')
+            .sort({ displayOrder: 1, name: 1 })
+            .exec();
     }
-    async findByGroup(groupId) {
-        return this.attributeDefinitionModel.find({ attributeGroup: groupId }).exec();
-    }
-    async findOne(id) {
-        const def = await this.attributeDefinitionModel.findById(id).populate('attributeGroup').exec();
-        if (!def) {
-            throw new common_1.NotFoundException(`Attribute definition with ID ${id} not found`);
-        }
-        return def;
-    }
-    async findByKey(attrKey) {
-        const def = await this.attributeDefinitionModel.findOne({ attrKey }).populate('attributeGroup').exec();
-        if (!def) {
-            throw new common_1.NotFoundException(`Attribute definition with key ${attrKey} not found`);
-        }
-        return def;
-    }
-    async update(id, dto) {
-        const def = await this.attributeDefinitionModel
-            .findByIdAndUpdate(id, dto, { new: true })
+    async getDefinitionById(id) {
+        const definition = await this.attributeDefinitionModel
+            .findById(id)
             .populate('attributeGroup')
             .exec();
-        if (!def) {
-            throw new common_1.NotFoundException(`Attribute definition with ID ${id} not found`);
+        if (!definition) {
+            throw new common_1.NotFoundException(`Không tìm thấy định nghĩa thuộc tính với ID: ${id}`);
         }
-        return def;
+        return definition;
     }
-    async remove(id) {
-        const caCount = await this.categoryAttributeModel.countDocuments({ attributeDefinition: id }).exec();
-        if (caCount > 0) {
-            throw new common_1.BadRequestException(`Cannot delete this attribute definition because it is used in ${caCount} category attributes. Please remove them first.`);
+    async getDefinitionByKey(attrKey) {
+        return this.attributeDefinitionModel
+            .findOne({ attrKey })
+            .populate('attributeGroup')
+            .exec();
+    }
+    async createDefinition(dto) {
+        const existing = await this.attributeDefinitionModel.findOne({ attrKey: dto.attrKey }).exec();
+        if (existing) {
+            throw new common_1.BadRequestException(`Đã tồn tại định nghĩa thuộc tính với khóa: ${dto.attrKey}`);
         }
-        const def = await this.attributeDefinitionModel.findByIdAndDelete(id).exec();
-        if (!def) {
-            throw new common_1.NotFoundException(`Attribute definition with ID ${id} not found`);
+        let attributeGroup = null;
+        if (dto.groupId) {
+            const group = await this.attributeGroupModel.findById(dto.groupId).exec();
+            if (!group) {
+                throw new common_1.NotFoundException(`Không tìm thấy nhóm thuộc tính với ID: ${dto.groupId}`);
+            }
+            attributeGroup = new mongoose_2.Types.ObjectId(dto.groupId);
         }
-        return { message: 'Attribute definition deleted successfully', definition: def };
+        const { groupId, ...rest } = dto;
+        const definition = new this.attributeDefinitionModel({
+            ...rest,
+            attributeGroup,
+            displayOrder: dto.displayOrder ?? 0,
+            isActive: dto.isActive ?? true,
+            isFilterable: dto.isFilterable ?? false,
+            isRequired: dto.isRequired ?? false,
+        });
+        return definition.save();
+    }
+    async updateDefinition(id, dto) {
+        const definition = await this.getDefinitionById(id);
+        if (dto.attrKey && dto.attrKey !== definition.attrKey) {
+            const existing = await this.attributeDefinitionModel
+                .findOne({ attrKey: dto.attrKey })
+                .exec();
+            if (existing) {
+                throw new common_1.BadRequestException(`Đã tồn tại định nghĩa thuộc tính với khóa: ${dto.attrKey}`);
+            }
+        }
+        const { groupId, ...rest } = dto;
+        if (groupId !== undefined) {
+            if (groupId === null) {
+                definition.attributeGroup = null;
+            }
+            else {
+                const group = await this.attributeGroupModel.findById(groupId).exec();
+                if (!group) {
+                    throw new common_1.NotFoundException(`Không tìm thấy nhóm thuộc tính với ID: ${groupId}`);
+                }
+                definition.attributeGroup = new mongoose_2.Types.ObjectId(groupId);
+            }
+        }
+        Object.assign(definition, rest);
+        return definition.save();
+    }
+    async deleteDefinition(id) {
+        const definition = await this.getDefinitionById(id);
+        await this.attributeDefinitionModel.findByIdAndDelete(definition._id).exec();
     }
 };
 exports.AttributeDefinitionsService = AttributeDefinitionsService;
 exports.AttributeDefinitionsService = AttributeDefinitionsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(attribute_definition_schema_1.AttributeDefinition.name)),
-    __param(1, (0, mongoose_1.InjectModel)('CategoryAttribute')),
+    __param(1, (0, mongoose_1.InjectModel)(attribute_group_schema_1.AttributeGroup.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
         mongoose_2.Model])
 ], AttributeDefinitionsService);

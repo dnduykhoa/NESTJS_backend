@@ -1,75 +1,19 @@
 import { Model } from 'mongoose';
-import { AttributeDefinition } from '../schemas/attribute-definition.schema';
-import { CreateAttributeDefinitionDto } from '../dto/definition/create-attribute-definition.dto';
-import { UpdateAttributeDefinitionDto } from '../dto/definition/update-attribute-definition.dto';
+import { AttributeDefinitionDocument } from '../schemas/attribute-definition.schema';
+import { AttributeGroupDocument } from '../schemas/attribute-group.schema';
+import { CreateAttributeDefinitionDto } from '../dto/create-attribute-definition.dto';
+import { UpdateAttributeDefinitionDto } from '../dto/update-attribute-definition.dto';
 export declare class AttributeDefinitionsService {
-    private attributeDefinitionModel;
-    private categoryAttributeModel;
-    constructor(attributeDefinitionModel: Model<AttributeDefinition>, categoryAttributeModel: Model<any>);
-    create(dto: CreateAttributeDefinitionDto): Promise<import("mongoose").Document<unknown, {}, AttributeDefinition, {}, import("mongoose").DefaultSchemaOptions> & AttributeDefinition & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    findAll(): Promise<(import("mongoose").Document<unknown, {}, AttributeDefinition, {}, import("mongoose").DefaultSchemaOptions> & AttributeDefinition & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[]>;
-    findActive(): Promise<(import("mongoose").Document<unknown, {}, AttributeDefinition, {}, import("mongoose").DefaultSchemaOptions> & AttributeDefinition & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[]>;
-    findFilterable(): Promise<(import("mongoose").Document<unknown, {}, AttributeDefinition, {}, import("mongoose").DefaultSchemaOptions> & AttributeDefinition & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[]>;
-    findByGroup(groupId: string): Promise<(import("mongoose").Document<unknown, {}, AttributeDefinition, {}, import("mongoose").DefaultSchemaOptions> & AttributeDefinition & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[]>;
-    findOne(id: string): Promise<import("mongoose").Document<unknown, {}, AttributeDefinition, {}, import("mongoose").DefaultSchemaOptions> & AttributeDefinition & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    findByKey(attrKey: string): Promise<import("mongoose").Document<unknown, {}, AttributeDefinition, {}, import("mongoose").DefaultSchemaOptions> & AttributeDefinition & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    update(id: string, dto: UpdateAttributeDefinitionDto): Promise<import("mongoose").Document<unknown, {}, AttributeDefinition, {}, import("mongoose").DefaultSchemaOptions> & AttributeDefinition & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    remove(id: string): Promise<{
-        message: string;
-        definition: import("mongoose").Document<unknown, {}, AttributeDefinition, {}, import("mongoose").DefaultSchemaOptions> & AttributeDefinition & Required<{
-            _id: import("mongoose").Types.ObjectId;
-        }> & {
-            __v: number;
-        } & {
-            id: string;
-        };
-    }>;
+    private readonly attributeDefinitionModel;
+    private readonly attributeGroupModel;
+    constructor(attributeDefinitionModel: Model<AttributeDefinitionDocument>, attributeGroupModel: Model<AttributeGroupDocument>);
+    getAllDefinitions(): Promise<AttributeDefinitionDocument[]>;
+    getActiveDefinitions(): Promise<AttributeDefinitionDocument[]>;
+    getFilterableDefinitions(): Promise<AttributeDefinitionDocument[]>;
+    getDefinitionsByGroup(groupId: string): Promise<AttributeDefinitionDocument[]>;
+    getDefinitionById(id: string): Promise<AttributeDefinitionDocument>;
+    getDefinitionByKey(attrKey: string): Promise<AttributeDefinitionDocument | null>;
+    createDefinition(dto: CreateAttributeDefinitionDto): Promise<AttributeDefinitionDocument>;
+    updateDefinition(id: string, dto: UpdateAttributeDefinitionDto): Promise<AttributeDefinitionDocument>;
+    deleteDefinition(id: string): Promise<void>;
 }

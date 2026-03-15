@@ -3,5 +3,5 @@ export declare class CreateCategoryDto {
     description?: string;
     displayOrder?: number;
     isActive?: boolean;
-    parent?: string;
+    parentId?: string;
 }

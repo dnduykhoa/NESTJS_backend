@@ -15,12 +15,11 @@ const passport_1 = require("@nestjs/passport");
 const passport_google_oauth20_1 = require("passport-google-oauth20");
 const auth_service_1 = require("../auth.service");
 let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrategy)(passport_google_oauth20_1.Strategy, 'google') {
-    authService;
     constructor(authService) {
         super({
-            clientID: process.env.GOOGLE_CLIENT_ID || '620629143754-tucrpkc6j3lua0jbvk20m3rthr4c11vo.apps.googleusercontent.com',
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET || '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',
-            callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/auth/google/callback',
+            clientID: process.env.GOOGLE_CLIENT_ID || '',
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+            callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8080/api/auth/google/callback',
             scope: ['email', 'profile'],
         });
         this.authService = authService;
@@ -28,7 +27,7 @@ let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrateg
     async validate(accessToken, refreshToken, profile, done) {
         const { id, emails, displayName, photos } = profile;
         const user = await this.authService.validateGoogleUser({
-            googleId: id,
+            providerId: id,
             email: emails[0].value,
             fullName: displayName,
             avatarUrl: photos[0]?.value,

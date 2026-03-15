@@ -9,14 +9,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoriesModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
-const categories_service_1 = require("./categories.service");
 const categories_controller_1 = require("./categories.controller");
 const category_attributes_controller_1 = require("./controllers/category-attributes.controller");
+const categories_service_1 = require("./categories.service");
 const category_attributes_service_1 = require("./services/category-attributes.service");
 const category_schema_1 = require("./schemas/category.schema");
 const category_attribute_schema_1 = require("./schemas/category-attribute.schema");
-const product_schemas_1 = require("../products/schemas/product.schemas");
 const attribute_definition_schema_1 = require("../attributes/schemas/attribute-definition.schema");
+const product_schema_1 = require("../products/schemas/product.schema");
 let CategoriesModule = class CategoriesModule {
 };
 exports.CategoriesModule = CategoriesModule;
@@ -26,8 +26,8 @@ exports.CategoriesModule = CategoriesModule = __decorate([
             mongoose_1.MongooseModule.forFeature([
                 { name: category_schema_1.Category.name, schema: category_schema_1.CategorySchema },
                 { name: category_attribute_schema_1.CategoryAttribute.name, schema: category_attribute_schema_1.CategoryAttributeSchema },
-                { name: attribute_definition_schema_1.AttributeDefinition.name, schema: attribute_definition_schema_1.AttributeDefinitionSchema },
-                { name: 'Product', schema: product_schemas_1.ProductSchema },
+                { name: 'AttributeDefinition', schema: attribute_definition_schema_1.AttributeDefinitionSchema },
+                { name: 'Product', schema: product_schema_1.ProductSchema },
             ]),
         ],
         controllers: [categories_controller_1.CategoriesController, category_attributes_controller_1.CategoryAttributesController],

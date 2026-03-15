@@ -1,12 +1,13 @@
+import { Response } from 'express';
 import { CartsService } from './carts.service';
-import { CreateCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
+import { AddCartItemDto, UpdateCartItemDto } from './dto/cart-item.dto';
 export declare class CartsController {
     private readonly cartsService;
     constructor(cartsService: CartsService);
-    create(createCartDto: CreateCartDto): string;
-    findAll(): string;
-    findOne(id: string): string;
-    update(id: string, updateCartDto: UpdateCartDto): string;
-    remove(id: string): string;
+    getCart(userId: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    validateCart(userId: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    addItem(userId: string, dto: AddCartItemDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    updateItem(userId: string, itemId: string, dto: UpdateCartItemDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    removeItem(userId: string, itemId: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    clearCart(userId: string, res: Response): Promise<Response<any, Record<string, any>>>;
 }

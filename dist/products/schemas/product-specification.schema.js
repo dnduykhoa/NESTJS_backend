@@ -11,20 +11,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductSpecificationSchema = exports.ProductSpecification = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
+const mongoose_2 = require("mongoose");
 let ProductSpecification = class ProductSpecification {
-    key;
-    value;
-    displayOrder;
 };
 exports.ProductSpecification = ProductSpecification;
 __decorate([
-    (0, mongoose_1.Prop)({ required: true }),
-    __metadata("design:type", String)
-], ProductSpecification.prototype, "key", void 0);
+    (0, mongoose_1.Prop)({ required: false, type: mongoose_2.Types.ObjectId, ref: 'AttributeDefinition', default: null }),
+    __metadata("design:type", mongoose_2.Types.ObjectId)
+], ProductSpecification.prototype, "attributeDefinition", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true }),
+    (0, mongoose_1.Prop)({ required: false, maxlength: 100 }),
     __metadata("design:type", String)
-], ProductSpecification.prototype, "value", void 0);
+], ProductSpecification.prototype, "specKey", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: false, maxlength: 500 }),
+    __metadata("design:type", String)
+], ProductSpecification.prototype, "specValue", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: false, type: Number, default: null }),
+    __metadata("design:type", Number)
+], ProductSpecification.prototype, "valueNumber", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ default: 0 }),
     __metadata("design:type", Number)

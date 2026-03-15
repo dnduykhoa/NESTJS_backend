@@ -12,12 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategorySchema = exports.Category = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
-let Category = class Category extends mongoose_2.Document {
-    name;
-    description;
-    displayOrder;
-    isActive;
-    parent;
+let Category = class Category {
 };
 exports.Category = Category;
 __decorate([
@@ -25,7 +20,7 @@ __decorate([
     __metadata("design:type", String)
 ], Category.prototype, "name", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: String }),
+    (0, mongoose_1.Prop)({ default: null, type: String }),
     __metadata("design:type", String)
 ], Category.prototype, "description", void 0);
 __decorate([
@@ -45,18 +40,17 @@ exports.Category = Category = __decorate([
 ], Category);
 exports.CategorySchema = mongoose_1.SchemaFactory.createForClass(Category);
 exports.CategorySchema.methods.isRoot = function () {
-    return this.parent == null;
+    return !this.parent;
 };
 exports.CategorySchema.methods.getLevel = async function () {
     let level = 0;
-    let currentParentId = this.parent;
-    const model = this.constructor;
-    while (currentParentId != null) {
+    let current = this;
+    while (current.parent) {
         level++;
-        const parentCategory = await model.findById(currentParentId).exec();
-        if (!parentCategory)
+        const CategoryModel = current.constructor;
+        current = await CategoryModel.findById(current.parent);
+        if (!current)
             break;
-        currentParentId = parentCategory.parent;
     }
     return level;
 };

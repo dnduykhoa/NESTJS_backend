@@ -1,22 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
+export type AttributeGroupDocument = AttributeGroup & Document;
+
 @Schema({ timestamps: true })
-export class AttributeGroup extends Document {
-  @Prop({ required: true, maxlength: 100 })
-  name!: string;
+export class AttributeGroup {
+  @Prop({ required: true, unique: true, maxlength: 100 })
+  name: string; // VD: "Hiệu năng", "Màn hình", "Kết nối"
 
-  @Prop({ maxlength: 500 })
-  description?: string;
+  @Prop({ default: null, type: String, maxlength: 500 })
+  description: string;
 
-  @Prop({ default: 0 })
-  displayOrder!: number;
+  @Prop({ default: 0, type: Number })
+  displayOrder: number;
 
   @Prop({ default: true })
-  isActive!: boolean;
+  isActive: boolean;
 }
 
 export const AttributeGroupSchema = SchemaFactory.createForClass(AttributeGroup);
-
-AttributeGroupSchema.index({ isActive: 1 });
-AttributeGroupSchema.index({ displayOrder: 1 });

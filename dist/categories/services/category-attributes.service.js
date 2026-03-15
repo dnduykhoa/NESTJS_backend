@@ -18,51 +18,58 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const category_attribute_schema_1 = require("../schemas/category-attribute.schema");
 let CategoryAttributesService = class CategoryAttributesService {
-    categoryAttributeModel;
     constructor(categoryAttributeModel) {
         this.categoryAttributeModel = categoryAttributeModel;
     }
-    async findByCategory(categoryId) {
+    async getByCategory(categoryId) {
         return this.categoryAttributeModel
             .find({ category: categoryId })
             .populate('attributeDefinition')
+            .sort({ displayOrder: 1 })
             .exec();
     }
     async assign(dto) {
-        const existing = await this.categoryAttributeModel
-            .findOne({ category: dto.category, attributeDefinition: dto.attributeDefinition })
-            .exec();
+        const existing = await this.categoryAttributeModel.findOne({
+            category: dto.categoryId,
+            attributeDefinition: dto.attrDefId,
+        });
         if (existing) {
-            throw new common_1.BadRequestException('This attribute is already assigned to this category');
+            throw new common_1.BadRequestException(`Thuộc tính này đã được gán cho danh mục. Không thể gán trùng lặp`);
         }
-        const ca = new this.categoryAttributeModel(dto);
-        return ca.save();
+        return new this.categoryAttributeModel({
+            category: dto.categoryId,
+            attributeDefinition: dto.attrDefId,
+            isRequired: dto.isRequired ?? false,
+            displayOrder: dto.displayOrder ?? 0,
+        }).save();
     }
-    async update(id, dto) {
-        const ca = await this.categoryAttributeModel
-            .findByIdAndUpdate(id, dto, { new: true })
-            .populate('attributeDefinition')
-            .exec();
-        if (!ca) {
-            throw new common_1.NotFoundException(`Category attribute with ID ${id} not found`);
+    async updateAssignment(id, dto) {
+        const assignment = await this.categoryAttributeModel.findById(id);
+        if (!assignment) {
+            throw new common_1.NotFoundException(`Không tìm thấy liên kết thuộc tính-danh mục với ID: ${id}`);
         }
-        return ca;
+        if (dto.isRequired !== undefined)
+            assignment.isRequired = dto.isRequired;
+        if (dto.displayOrder !== undefined)
+            assignment.displayOrder = dto.displayOrder;
+        return assignment.save();
     }
-    async remove(id) {
-        const ca = await this.categoryAttributeModel.findByIdAndDelete(id).exec();
-        if (!ca) {
-            throw new common_1.NotFoundException(`Category attribute with ID ${id} not found`);
+    async removeById(id) {
+        const assignment = await this.categoryAttributeModel.findById(id);
+        if (!assignment) {
+            throw new common_1.NotFoundException(`Không tìm thấy liên kết thuộc tính-danh mục với ID: ${id}`);
         }
-        return { message: 'Attribute removed from category successfully' };
+        await this.categoryAttributeModel.findByIdAndDelete(id);
     }
-    async removeByKeys(categoryId, attrDefId) {
-        const ca = await this.categoryAttributeModel
-            .findOneAndDelete({ category: categoryId, attributeDefinition: attrDefId })
-            .exec();
-        if (!ca) {
-            throw new common_1.NotFoundException('Category attribute not found');
+    async removeByCategoryAndDef(categoryId, attrDefId) {
+        const assignment = await this.categoryAttributeModel.findOne({
+            category: categoryId,
+            attributeDefinition: attrDefId,
+        });
+        if (!assignment) {
+            throw new common_1.NotFoundException(`Không tìm thấy liên kết giữa danh mục ${categoryId} và thuộc tính ${attrDefId}`);
         }
-        return { message: 'Attribute removed from category successfully' };
+        await this.categoryAttributeModel.findByIdAndDelete(assignment._id);
     }
 };
 exports.CategoryAttributesService = CategoryAttributesService;

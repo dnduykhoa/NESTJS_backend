@@ -1,62 +1,16 @@
 import { Document } from 'mongoose';
-export declare class Role extends Document {
+export type RoleDocument = Role & Document;
+export declare class Role {
     name: string;
-    description?: string;
-    isDeleted?: boolean;
+    description: string;
+    isDeleted: boolean;
 }
-export declare const RoleSchema: import("mongoose").Schema<Role, import("mongoose").Model<Role, any, any, any, (Document<unknown, any, Role, any, import("mongoose").DefaultSchemaOptions> & Role & Required<{
+export declare const RoleSchema: import("mongoose").Schema<Role, import("mongoose").Model<Role, any, any, any, Document<unknown, any, Role, any, {}> & Role & {
     _id: import("mongoose").Types.ObjectId;
-}> & {
-    __v: number;
 } & {
-    id: string;
-}) | (Document<unknown, any, Role, any, import("mongoose").DefaultSchemaOptions> & Role & Required<{
-    _id: import("mongoose").Types.ObjectId;
-}> & {
     __v: number;
-}), any, Role>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Role, Document<unknown, {}, Role, {
-    id: string;
-}, import("mongoose").DefaultSchemaOptions> & Omit<Role & Required<{
+}, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Role, Document<unknown, {}, import("mongoose").FlatRecord<Role>, {}, import("mongoose").DefaultSchemaOptions> & import("mongoose").FlatRecord<Role> & {
     _id: import("mongoose").Types.ObjectId;
-}> & {
+} & {
     __v: number;
-}, "id"> & {
-    id: string;
-}, {
-    name?: import("mongoose").SchemaDefinitionProperty<string, Role, Document<unknown, {}, Role, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<Role & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    description?: import("mongoose").SchemaDefinitionProperty<string | undefined, Role, Document<unknown, {}, Role, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<Role & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    _id?: import("mongoose").SchemaDefinitionProperty<import("mongoose").Types.ObjectId, Role, Document<unknown, {}, Role, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<Role & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-    isDeleted?: import("mongoose").SchemaDefinitionProperty<boolean | undefined, Role, Document<unknown, {}, Role, {
-        id: string;
-    }, import("mongoose").DefaultSchemaOptions> & Omit<Role & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    }, "id"> & {
-        id: string;
-    }> | undefined;
-}, Role>;
+}>;

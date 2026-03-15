@@ -12,11 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoryAttributeSchema = exports.CategoryAttribute = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
-let CategoryAttribute = class CategoryAttribute extends mongoose_2.Document {
-    category;
-    attributeDefinition;
-    isRequired;
-    displayOrder;
+let CategoryAttribute = class CategoryAttribute {
 };
 exports.CategoryAttribute = CategoryAttribute;
 __decorate([
@@ -24,7 +20,7 @@ __decorate([
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], CategoryAttribute.prototype, "category", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'AttributeDefinition', required: true, index: true }),
+    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'AttributeDefinition', required: true }),
     __metadata("design:type", mongoose_2.Types.ObjectId)
 ], CategoryAttribute.prototype, "attributeDefinition", void 0);
 __decorate([
@@ -32,13 +28,13 @@ __decorate([
     __metadata("design:type", Boolean)
 ], CategoryAttribute.prototype, "isRequired", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ default: 0 }),
+    (0, mongoose_1.Prop)({ default: 0, type: Number }),
     __metadata("design:type", Number)
 ], CategoryAttribute.prototype, "displayOrder", void 0);
 exports.CategoryAttribute = CategoryAttribute = __decorate([
-    (0, mongoose_1.Schema)({ timestamps: false })
+    (0, mongoose_1.Schema)({ timestamps: true })
 ], CategoryAttribute);
 exports.CategoryAttributeSchema = mongoose_1.SchemaFactory.createForClass(CategoryAttribute);
 exports.CategoryAttributeSchema.index({ category: 1, attributeDefinition: 1 }, { unique: true });
-exports.CategoryAttributeSchema.index({ displayOrder: 1 });
+exports.CategoryAttributeSchema.index({ category: 1, displayOrder: 1 });
 //# sourceMappingURL=category-attribute.schema.js.map

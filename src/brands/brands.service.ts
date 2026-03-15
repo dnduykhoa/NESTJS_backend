@@ -1,71 +1,91 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Brand, BrandDocument } from './schemas/brand.schema';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
-import { Brand } from './schemas/brand.schema';
+import { FileStorageService } from '../utils/file-storage.service';
+import { Product } from '../products/schemas/product.schema';
 
 @Injectable()
 export class BrandsService {
   constructor(
-    @InjectModel(Brand.name) 
-    private brandModel: Model<Brand>,
-    @InjectModel('Product') 
-    private productModel: Model<any>,
+    @InjectModel(Brand.name) private readonly brandModel: Model<BrandDocument>,
+    @InjectModel('Product') private readonly productModel: Model<any>,
+    private readonly fileStorage: FileStorageService,
   ) {}
 
-  async create(createBrandDto: CreateBrandDto) {
-    const createdBrand = new this.brandModel(createBrandDto);
-    return createdBrand.save();
+  async findAll(): Promise<BrandDocument[]> {
+    return this.brandModel.find().sort({ displayOrder: 1, name: 1 }).exec();
   }
 
-  async findAll() {
-    return this.brandModel.find().exec();
+  async findActive(): Promise<BrandDocument[]> {
+    return this.brandModel.find({ isActive: true }).sort({ displayOrder: 1, name: 1 }).exec();
   }
 
-  async findActive() {
-    return this.brandModel.find({ isActive: true }).exec();
-  }
-
-  async search(name: string) {
-    return this.brandModel
-      .find({ name: { $regex: name, $options: 'i' } })
-      .exec();
-  }
-
-  async findOne(id: string) {
+  async findById(id: string): Promise<BrandDocument> {
     const brand = await this.brandModel.findById(id).exec();
-    if (!brand) {
-      throw new NotFoundException(`Brand with ID ${id} not found`);
-    }
+    if (!brand) throw new NotFoundException(`Không tìm thấy thương hiệu với ID: ${id}`);
     return brand;
   }
 
-  async update(id: string, updateBrandDto: UpdateBrandDto) {
-    const updatedBrand = await this.brandModel
-      .findByIdAndUpdate(id, updateBrandDto, { new: true })
+  async search(name: string): Promise<BrandDocument[]> {
+    return this.brandModel
+      .find({ name: { $regex: name, $options: 'i' } })
+      .sort({ displayOrder: 1 })
       .exec();
-    if (!updatedBrand) {
-      throw new NotFoundException(`Brand with ID ${id} not found`);
-    }
-    return updatedBrand;
   }
 
-  async remove(id: string) {
-    // Kiểm tra xem có sản phẩm nào thuộc thương hiệu này không
-    const productCount = await this.productModel.countDocuments({ brand: id }).exec();
-    if (productCount > 0) {
-      throw new BadRequestException(
-        `Cannot delete this brand because it has ${productCount} products. Please reassign or delete the products first.`
-      );
+  async create(dto: CreateBrandDto, logoFile?: Express.Multer.File): Promise<BrandDocument> {
+    const existing = await this.brandModel.findOne({ name: dto.name });
+    if (existing) throw new Error(`Đã tồn tại thương hiệu với tên: ${dto.name}`);
+
+    let logoUrl: string | undefined;
+    if (logoFile) {
+      if (!this.fileStorage.isImageFile(logoFile)) {
+        throw new Error('File logo phải là ảnh (JPG, PNG, WEBP, SVG,...)');
+      }
+      logoUrl = this.fileStorage.storeFile(logoFile, 'brands');
     }
 
-    const deletedBrand = await this.brandModel
-      .findByIdAndDelete(id)
-      .exec();
-    if (!deletedBrand) {
-      throw new NotFoundException(`Brand with ID ${id} not found`);
+    return new this.brandModel({
+      ...dto,
+      logoUrl,
+      displayOrder: dto.displayOrder ?? 0,
+      isActive: dto.isActive ?? true,
+    }).save();
+  }
+
+  async update(id: string, dto: UpdateBrandDto, logoFile?: Express.Multer.File): Promise<BrandDocument> {
+    const brand = await this.findById(id);
+
+    if (dto.name && dto.name !== brand.name) {
+      const existing = await this.brandModel.findOne({ name: dto.name });
+      if (existing) throw new Error(`Đã tồn tại thương hiệu với tên: ${dto.name}`);
     }
-    return { message: 'Brand deleted successfully', brand: deletedBrand };
+
+    if (logoFile) {
+      if (!this.fileStorage.isImageFile(logoFile)) {
+        throw new Error('File logo phải là ảnh');
+      }
+      // Xóa logo cũ
+      if (brand.logoUrl) this.fileStorage.deleteFile(brand.logoUrl);
+      brand.logoUrl = this.fileStorage.storeFile(logoFile, 'brands');
+    }
+
+    Object.assign(brand, dto);
+    return brand.save();
+  }
+
+  async remove(id: string): Promise<void> {
+    const brand = await this.findById(id);
+    const productCount = await this.productModel.countDocuments({ brand: id });
+    if (productCount > 0) {
+      throw new BadRequestException(
+        `Không thể xóa thương hiệu này vì còn ${productCount} sản phẩm. Hãy xóa hoặc chuyển sản phẩm trước`,
+      );
+    }
+    if (brand.logoUrl) this.fileStorage.deleteFile(brand.logoUrl);
+    await this.brandModel.findByIdAndDelete(id);
   }
 }

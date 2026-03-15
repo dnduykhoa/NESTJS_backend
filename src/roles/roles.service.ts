@@ -1,51 +1,55 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Role, RoleDocument } from './schemas/role.schema';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { Role } from './schemas/role.schema';
 
 @Injectable()
 export class RolesService {
   constructor(
-    @InjectModel(Role.name) 
-    private roleModel: Model<Role>,
+    @InjectModel(Role.name) private readonly roleModel: Model<RoleDocument>,
   ) {}
 
-  async create(createRoleDto: CreateRoleDto) {
-    const createdRole = new this.roleModel(createRoleDto);
-    return createdRole.save();
+  async create(createRoleDto: CreateRoleDto): Promise<RoleDocument> {
+    const existing = await this.roleModel.findOne({ name: createRoleDto.name });
+    if (existing) {
+      throw new Error(`Đã tồn tại vai trò với tên: ${createRoleDto.name}`);
+    }
+    return new this.roleModel(createRoleDto).save();
   }
 
-  async findAll() {
+  async findAll(): Promise<RoleDocument[]> {
     return this.roleModel.find({ isDeleted: false }).exec();
   }
 
-  async findOne(id: string) {
+  async findById(id: string): Promise<RoleDocument> {
     const role = await this.roleModel.findById(id).exec();
     if (!role || role.isDeleted) {
-      throw new NotFoundException(`Role with ID ${id} not found`);
+      throw new NotFoundException(`Không tìm thấy vai trò với ID: ${id}`);
     }
     return role;
   }
 
-  async update(id: string, updateRoleDto: UpdateRoleDto) {
-    const updatedRole = await this.roleModel
-      .findByIdAndUpdate(id, updateRoleDto, { new: true })
-      .exec();
-    if (!updatedRole || updatedRole.isDeleted) {
-      throw new NotFoundException(`Role with ID ${id} not found`);
-    }
-    return updatedRole;
+  async findByName(name: string): Promise<RoleDocument | null> {
+    return this.roleModel.findOne({ name, isDeleted: false }).exec();
   }
 
-  async remove(id: string) {
-    const deletedRole = await this.roleModel
-      .findByIdAndUpdate(id, { isDeleted: true }, { new: true })
-      .exec();
-    if (!deletedRole) {
-      throw new NotFoundException(`Role with ID ${id} not found`);
+  async update(id: string, updateRoleDto: UpdateRoleDto): Promise<RoleDocument> {
+    const role = await this.findById(id);
+    if (updateRoleDto.name && updateRoleDto.name !== role.name) {
+      const existing = await this.roleModel.findOne({ name: updateRoleDto.name });
+      if (existing) {
+        throw new Error(`Đã tồn tại vai trò với tên: ${updateRoleDto.name}`);
+      }
     }
-    return { message: 'Role deleted successfully', role: deletedRole };
+    Object.assign(role, updateRoleDto);
+    return role.save();
+  }
+
+  async remove(id: string): Promise<void> {
+    const role = await this.findById(id);
+    role.isDeleted = true;
+    await role.save();
   }
 }

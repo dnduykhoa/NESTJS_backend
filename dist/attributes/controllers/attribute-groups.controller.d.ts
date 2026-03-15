@@ -1,52 +1,14 @@
+import { Response } from 'express';
 import { AttributeGroupsService } from '../services/attribute-groups.service';
-import { CreateAttributeGroupDto } from '../dto/group/create-attribute-group.dto';
-import { UpdateAttributeGroupDto } from '../dto/group/update-attribute-group.dto';
+import { CreateAttributeGroupDto } from '../dto/create-attribute-group.dto';
+import { UpdateAttributeGroupDto } from '../dto/update-attribute-group.dto';
 export declare class AttributeGroupsController {
     private readonly attributeGroupsService;
     constructor(attributeGroupsService: AttributeGroupsService);
-    create(dto: CreateAttributeGroupDto): Promise<import("mongoose").Document<unknown, {}, import("../schemas/attribute-group.schema").AttributeGroup, {}, import("mongoose").DefaultSchemaOptions> & import("../schemas/attribute-group.schema").AttributeGroup & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    findAll(): Promise<(import("mongoose").Document<unknown, {}, import("../schemas/attribute-group.schema").AttributeGroup, {}, import("mongoose").DefaultSchemaOptions> & import("../schemas/attribute-group.schema").AttributeGroup & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[]>;
-    findActive(): Promise<(import("mongoose").Document<unknown, {}, import("../schemas/attribute-group.schema").AttributeGroup, {}, import("mongoose").DefaultSchemaOptions> & import("../schemas/attribute-group.schema").AttributeGroup & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    })[]>;
-    findOne(id: string): Promise<import("mongoose").Document<unknown, {}, import("../schemas/attribute-group.schema").AttributeGroup, {}, import("mongoose").DefaultSchemaOptions> & import("../schemas/attribute-group.schema").AttributeGroup & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    update(id: string, dto: UpdateAttributeGroupDto): Promise<import("mongoose").Document<unknown, {}, import("../schemas/attribute-group.schema").AttributeGroup, {}, import("mongoose").DefaultSchemaOptions> & import("../schemas/attribute-group.schema").AttributeGroup & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }>;
-    remove(id: string): Promise<{
-        message: string;
-        group: import("mongoose").Document<unknown, {}, import("../schemas/attribute-group.schema").AttributeGroup, {}, import("mongoose").DefaultSchemaOptions> & import("../schemas/attribute-group.schema").AttributeGroup & Required<{
-            _id: import("mongoose").Types.ObjectId;
-        }> & {
-            __v: number;
-        } & {
-            id: string;
-        };
-    }>;
+    getAll(res: Response): Promise<Response<any, Record<string, any>>>;
+    getActive(res: Response): Promise<Response<any, Record<string, any>>>;
+    getById(id: string, res: Response): Promise<Response<any, Record<string, any>>>;
+    create(dto: CreateAttributeGroupDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    update(id: string, dto: UpdateAttributeGroupDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    delete(id: string, res: Response): Promise<Response<any, Record<string, any>>>;
 }

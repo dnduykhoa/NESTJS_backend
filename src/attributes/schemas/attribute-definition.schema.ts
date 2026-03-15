@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
+export type AttributeDefinitionDocument = AttributeDefinition & Document;
+
 export enum DataType {
   STRING = 'STRING',
   NUMBER = 'NUMBER',
@@ -9,42 +11,41 @@ export enum DataType {
 }
 
 @Schema({ timestamps: true })
-export class AttributeDefinition extends Document {
+export class AttributeDefinition {
   @Prop({ required: true, maxlength: 100 })
-  name!: string;
+  name: string; // VD: "RAM", "CPU", "Kích thước màn hình"
 
-  @Prop({ required: true, maxlength: 100 })
-  attrKey!: string;
+  @Prop({ required: true, unique: true, maxlength: 100 })
+  attrKey: string; // VD: "ram", "cpu", "screen_size"
 
   @Prop({
-    required: true,
-    enum: DataType,
     type: String,
+    enum: DataType,
     default: DataType.STRING,
   })
-  dataType!: DataType;
+  dataType: DataType;
 
-  @Prop({ maxlength: 50 })
-  unit?: string;
-
-  @Prop({ default: false })
-  isFilterable!: boolean;
+  @Prop({ default: null, maxlength: 50 })
+  unit: string; // VD: "GB", "GHz", "inch"
 
   @Prop({ default: false })
-  isRequired!: boolean;
+  isFilterable: boolean;
 
-  @Prop({ default: 0 })
-  displayOrder!: number;
+  @Prop({ default: false })
+  isRequired: boolean;
+
+  @Prop({ default: 0, type: Number })
+  displayOrder: number;
 
   @Prop({ default: true })
-  isActive!: boolean;
+  isActive: boolean;
 
-  @Prop({ type: Types.ObjectId, ref: 'AttributeGroup' })
-  attributeGroup?: Types.ObjectId;
+  // Nhóm thuộc tính chứa định nghĩa này
+  @Prop({ type: Types.ObjectId, ref: 'AttributeGroup', default: null })
+  attributeGroup: Types.ObjectId;
 }
 
 export const AttributeDefinitionSchema = SchemaFactory.createForClass(AttributeDefinition);
-
-AttributeDefinitionSchema.index({ attrKey: 1 }, { unique: true });
-AttributeDefinitionSchema.index({ isActive: 1 });
-AttributeDefinitionSchema.index({ displayOrder: 1 });
+AttributeDefinitionSchema.index({ attrKey: 1 });
+AttributeDefinitionSchema.index({ isFilterable: 1 });
+AttributeDefinitionSchema.index({ attributeGroup: 1 });

@@ -8,15 +8,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersModule = void 0;
 const common_1 = require("@nestjs/common");
-const orders_service_1 = require("./orders.service");
+const mongoose_1 = require("@nestjs/mongoose");
 const orders_controller_1 = require("./orders.controller");
+const orders_service_1 = require("./orders.service");
+const order_schema_1 = require("./schemas/order.schema");
+const product_schema_1 = require("../products/schemas/product.schema");
+const cart_schema_1 = require("../carts/schemas/cart.schema");
+const mail_handler_1 = require("../utils/mail.handler");
+const payment_deadline_scheduler_1 = require("./payment-deadline.scheduler");
 let OrdersModule = class OrdersModule {
 };
 exports.OrdersModule = OrdersModule;
 exports.OrdersModule = OrdersModule = __decorate([
     (0, common_1.Module)({
+        imports: [
+            mongoose_1.MongooseModule.forFeature([
+                { name: order_schema_1.Order.name, schema: order_schema_1.OrderSchema },
+                { name: 'Product', schema: product_schema_1.ProductSchema },
+                { name: cart_schema_1.Cart.name, schema: cart_schema_1.CartSchema },
+            ]),
+        ],
         controllers: [orders_controller_1.OrdersController],
-        providers: [orders_service_1.OrdersService],
+        providers: [orders_service_1.OrdersService, mail_handler_1.MailHandler, payment_deadline_scheduler_1.PaymentDeadlineScheduler],
+        exports: [orders_service_1.OrdersService],
     })
 ], OrdersModule);
 //# sourceMappingURL=orders.module.js.map

@@ -1,31 +1,15 @@
 import { Model } from 'mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './schemas/user.schema';
+import { UserDocument } from './schemas/user.schema';
+import { RoleDocument } from '../roles/schemas/role.schema';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 export declare class UsersService {
-    private userModel;
-    constructor(userModel: Model<User>);
-    create(createUserDto: CreateUserDto): string;
-    findAll(): string;
-    findOne(id: number): string;
-    findById(id: string): Promise<(import("mongoose").Document<unknown, {}, User, {}, import("mongoose").DefaultSchemaOptions> & User & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }) | null>;
-    updateProfile(userId: string, data: {
-        fullName?: string;
-        birthday?: string;
-        avatarUrl?: string;
-    }): Promise<(import("mongoose").Document<unknown, {}, User, {}, import("mongoose").DefaultSchemaOptions> & User & Required<{
-        _id: import("mongoose").Types.ObjectId;
-    }> & {
-        __v: number;
-    } & {
-        id: string;
-    }) | null>;
-    update(id: number, updateUserDto: UpdateUserDto): string;
-    remove(id: number): string;
+    private readonly userModel;
+    private readonly roleModel;
+    constructor(userModel: Model<UserDocument>, roleModel: Model<RoleDocument>);
+    findById(id: string): Promise<UserDocument>;
+    getAllUsers(): Promise<UserDocument[]>;
+    searchUsers(keyword: string): Promise<UserDocument[]>;
+    updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserDocument>;
+    updateUserRoles(userId: string, roleNames: string[]): Promise<UserDocument>;
+    deleteUser(userId: string): Promise<void>;
 }

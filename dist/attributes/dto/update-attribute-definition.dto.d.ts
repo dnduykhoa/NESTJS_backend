@@ -1,0 +1,12 @@
+import { DataType } from '../schemas/attribute-definition.schema';
+export declare class UpdateAttributeDefinitionDto {
+    name?: string;
+    attrKey?: string;
+    dataType?: DataType;
+    unit?: string;
+    isFilterable?: boolean;
+    isRequired?: boolean;
+    displayOrder?: number;
+    isActive?: boolean;
+    groupId?: string;
+}
